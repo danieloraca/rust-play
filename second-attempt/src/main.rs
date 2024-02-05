@@ -1,6 +1,16 @@
 use tracing_subscriber::filter::{EnvFilter, LevelFilter};use lambda_runtime::{run, service_fn, Error, LambdaEvent};
 
 use serde::{Deserialize, Serialize};
+// use aws_sdk_dynamodb::{
+    // types:: {
+    //     AttributeValue,
+    // },
+    // Client,
+    // Error,
+// };
+use aws_config::BehaviorVersion;
+use aws_sdk_dynamodb::Client;
+// use aws_sdk_dynamodb::types::AttributeValue;
 
 /// This is a made-up example. Requests come into the runtime as unicode
 /// strings in json format, which can map to any structure that implements `serde::Deserialize`
@@ -30,11 +40,28 @@ async fn function_handler(event: LambdaEvent<Request>) -> Result<Response, Error
     // Extract some useful info from the request
     let command = event.payload.command;
 
+    let config = aws_config::load_from_env().await;
+    let client = Client::new(&config);
+    let shared_config = aws_config::load_defaults(BehaviorVersion::latest()).await;
+    let client = Client::new(&shared_config);
+    let result = client
+        .scan()
+        .table_name("DynamoDan")
+        .limit(1)
+        .send()
+        .await?;
+    
+    if let Some(items) = result.items {
+       for item in items {
+           println!("Item: {:?}", item);
+       }
+    }
+    //
     // Prepare the response
     let resp = Response {
         req_id: event.context.request_id,
         msg: format!("Command {}.", command),
-        my_id: Some(123),
+        my_id: Some(112),
     };
 
     // Return `Response` (it will be serialized to JSON automatically by the runtime)
