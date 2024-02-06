@@ -16,10 +16,22 @@ struct Response {
     my_id: Option<i32>
 }
 
-// async fn query_by_id(client: &Client, table_name: String {
+// async fn query_by_id(client: &Client, table_name: String) {
+//     let result = client.query()
+//         .table_name(table_name)
+//         .key_condition_expression("id = :id")
+//         .expression_attribute_values(":id", AttributeValue::S(id.to_string()))
+//         .send()
+//         .await?;
 //
+//     if let Some(items) = result.items {
+//        for item in items {
+//            println!("Item: {:?}", item);
+//        }
+//     }
+//     Ok(())
 // }
-
+//
 async fn function_handler(event: LambdaEvent<Request>) -> Result<Response, Error> {
     // Extract some useful info from the request
     let id = event.payload.id;
@@ -57,6 +69,10 @@ async fn function_handler(event: LambdaEvent<Request>) -> Result<Response, Error
     //         ..Default::default()
     //     })
     //     .await?;
+
+    // if result.is_ok() {
+    //     println!("got something!");
+    // }
 
     if let Some(items) = result.items {
        for item in items {
