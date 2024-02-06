@@ -23,6 +23,10 @@ tracing = { version = "0.1", features = ["log"] }
 tracing-subscriber = { version = "0.3", default-features = false, features = ["env-filter", "fmt"] }
 aws-config = "1.0.1"
 aws-sdk-dynamodb = "1.3.0"
+rusoto_dynamodb = "0.48.0"
+openssl = { version = "0.10", features = ["vendored"] }
+maplit = "1.0"
+
 
 [profile.release]
 opt-level = 'z'     # Optimize for size.

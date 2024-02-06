@@ -1,29 +1,14 @@
 use tracing_subscriber::filter::{EnvFilter, LevelFilter};use lambda_runtime::{run, service_fn, Error, LambdaEvent};
-
 use serde::{Deserialize, Serialize};
-// use aws_sdk_dynamodb::{
-    // types:: {
-    //     AttributeValue,
-    // },
-    // Client,
-    // Error,
-// };
 use aws_config::BehaviorVersion;
 use aws_sdk_dynamodb::Client;
-// use aws_sdk_dynamodb::types::AttributeValue;
+use aws_sdk_dynamodb::types::AttributeValue;
 
-/// This is a made-up example. Requests come into the runtime as unicode
-/// strings in json format, which can map to any structure that implements `serde::Deserialize`
-/// The runtime pays no attention to the contents of the request payload.
 #[derive(Deserialize)]
 struct Request {
-    command: String,
+    id: String,
 }
 
-/// This is a made-up example of what a response structure may look like.
-/// There is no restriction on what it can be. The runtime requires responses
-/// to be serialized into json. The runtime pays no attention
-/// to the contents of the response payload.
 #[derive(Serialize)]
 struct Response {
     req_id: String,
@@ -31,26 +16,48 @@ struct Response {
     my_id: Option<i32>
 }
 
-/// This is the main body for the function.
-/// Write your code inside it.
-/// There are some code example in the following URLs:
-/// - https://github.com/awslabs/aws-lambda-rust-runtime/tree/main/examples
-/// - https://github.com/aws-samples/serverless-rust-demo/
+// async fn query_by_id(client: &Client, table_name: String {
+//
+// }
+
 async fn function_handler(event: LambdaEvent<Request>) -> Result<Response, Error> {
     // Extract some useful info from the request
-    let command = event.payload.command;
-
-    let config = aws_config::load_from_env().await;
-    let client = Client::new(&config);
+    let id = event.payload.id;
     let shared_config = aws_config::load_defaults(BehaviorVersion::latest()).await;
     let client = Client::new(&shared_config);
-    let result = client
-        .scan()
+
+    let result = client.query()
         .table_name("DynamoDan")
-        .limit(1)
+        .key_condition_expression("id = :id")
+        .expression_attribute_values(":id", AttributeValue::S(id.to_string()))
         .send()
         .await?;
+
+    // let result = client
+    //     .scan()
+    //     .table_name("DynamoDan")
+    //     .limit(3)
+    //     .send()
+    //     .await?;
     
+    // let result = client
+    //     .query(QueryInput {
+    //         table_name: "DynamoDan".to_string(),
+    //         key_condition_expression: Some("#id = :id".to_string()),
+    //         expression_attribute_names: Some(maplit::hashmap! {
+    //             "#id".to_string() => "id".to_string(),
+    //         }),
+    //         expression_attribute_values: Some(maplit::hashmap! {
+    //             ":id".to_string() => rusoto_dynamodb::AttributeValue {
+    //                 s: Some(id_to_query.to_string()),
+    //                 ..Default::default()
+    //             },
+    //         }),
+    //         limit: Some(3),
+    //         ..Default::default()
+    //     })
+    //     .await?;
+
     if let Some(items) = result.items {
        for item in items {
            println!("Item: {:?}", item);
@@ -60,7 +67,7 @@ async fn function_handler(event: LambdaEvent<Request>) -> Result<Response, Error
     // Prepare the response
     let resp = Response {
         req_id: event.context.request_id,
-        msg: format!("Command {}.", command),
+        msg: format!("Id {}.", id),
         my_id: Some(112),
     };
 
