@@ -13,10 +13,10 @@ struct Request {
 #[derive(Serialize)]
 struct Response {
     req_id: String,
-    msg: String,
-    my_id: Option<i32>
+    result: Vec<SolarSystem>,
 }
 
+#[derive(Serialize)]
 pub struct SolarSystem {
     pub id: String,
     pub name: String,
@@ -76,75 +76,21 @@ pub async fn query_by_id(
     }
 }
 
-// async fn query_by_id(client: &Client, table_name: String) {
-//     let result = client.query()
-//         .table_name(table_name)
-//         .key_condition_expression("id = :id")
-//         .expression_attribute_values(":id", AttributeValue::S(id.to_string()))
-//         .send()
-//         .await?;
-//
-//     if let Some(items) = result.items {
-//        for item in items {
-//            println!("Item: {:?}", item);
-//        }
-//     }
-//     Ok(())
-// }
-//
 async fn function_handler(event: LambdaEvent<Request>) -> Result<Response, Error> {
     // Extract some useful info from the request
     let id = event.payload.id;
     let shared_config = aws_config::load_defaults(BehaviorVersion::latest()).await;
     let client = Client::new(&shared_config);
 
-    let result = client.query()
-        .table_name("DynamoDan")
-        .key_condition_expression("id = :id")
-        .expression_attribute_values(":id", AttributeValue::S(id.to_string()))
-        .send()
-        .await?;
+    let res = match query_by_id(&client, "DynamoDan", &id).await {
+        Ok(solar_systems) => axum::Json(solar_systems),
+        Err(_e) => axum::Json(Vec::new()),
+    };
 
-    // let result = client
-    //     .scan()
-    //     .table_name("DynamoDan")
-    //     .limit(3)
-    //     .send()
-    //     .await?;
-    
-    // let result = client
-    //     .query(QueryInput {
-    //         table_name: "DynamoDan".to_string(),
-    //         key_condition_expression: Some("#id = :id".to_string()),
-    //         expression_attribute_names: Some(maplit::hashmap! {
-    //             "#id".to_string() => "id".to_string(),
-    //         }),
-    //         expression_attribute_values: Some(maplit::hashmap! {
-    //             ":id".to_string() => rusoto_dynamodb::AttributeValue {
-    //                 s: Some(id_to_query.to_string()),
-    //                 ..Default::default()
-    //             },
-    //         }),
-    //         limit: Some(3),
-    //         ..Default::default()
-    //     })
-    //     .await?;
-
-    // if result.is_ok() {
-    //     println!("got something!");
-    // }
-
-    if let Some(items) = result.items {
-       for item in items {
-           println!("Item: {:?}", item);
-       }
-    }
-    //
     // Prepare the response
     let resp = Response {
         req_id: event.context.request_id,
-        msg: format!("Id {}.", id),
-        my_id: Some(112),
+        result: res.0
     };
 
     // Return `Response` (it will be serialized to JSON automatically by the runtime)
