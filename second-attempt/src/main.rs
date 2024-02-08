@@ -1,4 +1,5 @@
-use tracing_subscriber::filter::{EnvFilter, LevelFilter};use lambda_runtime::{run, service_fn, Error, LambdaEvent};
+use tracing_subscriber::filter::{EnvFilter, LevelFilter};
+use lambda_runtime::{run, service_fn, Error, LambdaEvent};
 use serde::{Deserialize, Serialize};
 use aws_config::BehaviorVersion;
 use aws_sdk_dynamodb::Client;
@@ -20,15 +21,16 @@ struct Response {
 pub struct SolarSystem {
     pub id: String,
     pub name: String,
-    pub type_: String,
+    #[serde(rename = "type")]
+    pub system_type: String,
 }
 
 impl SolarSystem {
-    pub fn new(id: String, name: String, type_: String) -> Self {
+    pub fn new(id: String, name: String, system_type: String) -> Self {
         SolarSystem {
             id,
             name,
-            type_,
+            system_type,
         }
     }
 }
@@ -46,9 +48,9 @@ impl From<&HashMap<String, AttributeValue>> for SolarSystem {
     fn from(item: &HashMap<String, AttributeValue>) -> Self {
         let id = as_string(item.get("id"), &"".to_string());
         let name = as_string(item.get("name"), &"".to_string());
-        let type_ = as_string(item.get("type"), &"".to_string());
+        let system_type = as_string(item.get("type"), &"".to_string());
 
-        SolarSystem::new(id, name, type_)
+        SolarSystem::new(id, name, system_type)
     }
 }
 
