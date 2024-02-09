@@ -5,6 +5,8 @@ use aws_config::BehaviorVersion;
 use aws_sdk_dynamodb::Client;
 use aws_sdk_dynamodb::types::AttributeValue;
 use std::collections::HashMap;
+use uuid::Uuid;
+use rand::Rng;
 
 #[derive(Deserialize)]
 struct Request {
@@ -78,11 +80,39 @@ pub async fn query_by_id(
     }
 }
 
+pub async fn add_random_solar_system(
+    client: &Client,
+    table_name: &str,
+) -> Result<(), Error> {
+    let id = Uuid::new_v4();
+    let random_number: u32 = rand::thread_rng().gen_range(1..=100);
+
+    let solar_system = SolarSystem::new(
+        id.to_string(),
+        format!("New Solar System {}", random_number),
+        "G-Type".to_string(),
+    );
+
+    client
+        .put_item()
+        .table_name(table_name)
+        .item("id", AttributeValue::S(solar_system.id))
+        .item("name", AttributeValue::S(solar_system.name))
+        .item("type", AttributeValue::S(solar_system.system_type))
+        .send()
+        .await?;
+
+    Ok(())
+}
+
 async fn function_handler(event: LambdaEvent<Request>) -> Result<Response, Error> {
     // Extract some useful info from the request
     let id = event.payload.id;
     let shared_config = aws_config::load_defaults(BehaviorVersion::latest()).await;
     let client = Client::new(&shared_config);
+
+    //insert something
+    add_random_solar_system(&client, "DynamoDan").await?;
 
     let res = match query_by_id(&client, "DynamoDan", &id).await {
         Ok(solar_systems) => axum::Json(solar_systems),
