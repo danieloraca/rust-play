@@ -1,6 +1,7 @@
 use tracing_subscriber::filter::{EnvFilter, LevelFilter};use lambda_runtime::{run, service_fn, Error, LambdaEvent};
 use aws_sdk_s3 as s3;
 use aws_sdk_s3::Client;
+use aws_sdk_s3::primitives::ByteStream;
 use aws_sdk_s3::Config;
 
 use aws_sdk_dynamodb as dynamodb;
@@ -61,6 +62,32 @@ pub async fn list_objects(client: &Client, bucket: &str) -> Result<(), Error> {
 
     Ok(())
 }
+
+pub async fn put_file(
+    client: &Client, 
+    bucket: &str, 
+    key: &str, 
+    body: ByteStream
+) -> Result<(), Error> {
+    println!("Putting file");
+    println!("Bucket: {}", bucket);
+    println!("Key: {}", key);
+
+    const BODY: &str = "Hello, world!";
+
+    let response = client
+        .put_object()
+        .bucket(bucket.to_owned())
+        .key(key.to_owned())
+        .body(ByteStream::from_static(BODY.as_bytes()))
+        .send()
+        .await?;
+
+    println!("Response: {:?}", response);
+
+    Ok(())
+}
+
 pub async fn get_file(client: &Client, bucket: &str, key: &str) -> Result<(), Error> {
     println!("Getting file");
     println!("Bucket: {}", bucket);
@@ -75,7 +102,11 @@ pub async fn get_file(client: &Client, bucket: &str, key: &str) -> Result<(), Er
 
     let body = response.body;
     println!("Body: {:?}", body);
-//
+
+    // try put body into a file
+    let new_key = "test.txt";
+    put_file(client, bucket, new_key, body).await?;
+
     Ok(())
 }
 
