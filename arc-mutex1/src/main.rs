@@ -6,7 +6,7 @@ fn main() {
 
     let mut handles = vec![];
 
-    for i in 0..50000 {
+    for i in 0..5 {
         let counter = Arc::clone(&counter);
         let handle = thread::spawn(move || {
             let mut num = counter.lock().unwrap();
