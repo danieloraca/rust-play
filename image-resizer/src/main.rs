@@ -61,20 +61,40 @@ pub async fn list_objects(client: &Client, bucket: &str) -> Result<(), Error> {
 
     Ok(())
 }
+pub async fn get_file(client: &Client, bucket: &str, key: &str) -> Result<(), Error> {
+    println!("Getting file");
+    println!("Bucket: {}", bucket);
+    println!("Key: {}", key);
+
+    let response = client
+        .get_object()
+        .bucket(bucket.to_owned())
+        .key(key.to_owned())
+        .send()
+        .await?;
+
+    let body = response.body;
+    println!("Body: {:?}", body);
+//
+    Ok(())
+}
 
 async fn function_handler(event: LambdaEvent<Request>) -> Result<Response, Error> {
     // Extract some useful info from the request
-    let command = event.payload.command;
+    let file_name = event.payload.command;
 
     //talk to S3
     let config = aws_config::load_from_env().await;
     let s3_client = aws_sdk_s3::Client::new(&config);
     list_objects(&s3_client, "dan-images-resized").await?;
 
+    println!("Getting file");
+    get_file(&s3_client, "dan-images-resized", file_name.as_str()).await?;
+
     // Prepare the response
     let resp = Response {
         req_id: event.context.request_id,
-        msg: format!("Command {}.", command),
+        msg: format!("File name {}.", file_name),
     };
 
     do_resize().unwrap();
