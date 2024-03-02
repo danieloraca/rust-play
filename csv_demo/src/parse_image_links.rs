@@ -65,6 +65,33 @@ pub fn parse_image_links(link_str: &str) -> Result<Option<Vec<Url>>, &'static st
         .collect::<Result<Option<Vec<Url>>, _>>()
 }
 
+pub fn deserialize_image_links<'de, D>(deserializer: D) -> Result<Option<Vec<Url>>, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    let link_str: &str = Deserialize::deserialize(deserializer)?;
+    parse_image_links(link_str).map_err(serde::de::Error::custom)
+}
+
+pub fn serialize_image_links<S>(
+    image_links: &Option<Vec<Url>>, 
+    serializer: S,
+) -> Result<S::Ok, S::Error>
+where
+    S: serde::Serializer,
+{
+    serializer.serialize_str(
+        &serde_json::to_string(image_links)
+            .map_err(|_| serde::ser::Error::custom("Invalid URL"))?,
+    )
+    // match image_links {
+    //     Some(links) => serializer.serialize_str(
+    //         &serde_json::to_string(links)
+    //             .map_err(|_| serde::ser::Error::custom("Invalid URL"))?,
+    //     ),
+    //     None => serializer.serialize_none(),
+    // }
+}
 
 #[cfg(test)]
 mod tests {
