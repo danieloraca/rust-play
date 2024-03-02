@@ -1,28 +1,6 @@
 use url::Url;
 use serde::{Deserialize, Deserializer};
 
-// fn unbox_image_links(image_links: &str) -> &str {
-//     image_links
-//         .trim_start_matches("[")
-//         .trim_end_matches("]")
-// }
-//
-// fn split_image_links(image_links: &str) -> Vec<&str> {
-//     image_links
-//         .split(", ")
-//         .collect()
-// }
-//
-// fn remove_single_quotes(image_links: &str) -> &str {
-//     image_links
-//         .trim_start_matches("'")
-//         .trim_end_matches("'")
-// }
-//
-// fn parse_image_link(image_link: &str) -> Option<Url> {
-//     Url::parse(image_link).ok()
-// }
-
 trait ParseImageLink {
     fn unbox_image_links(&self) -> &str;
     fn split_image_links(&self) -> Vec<&str>;
@@ -84,13 +62,6 @@ where
         &serde_json::to_string(image_links)
             .map_err(|_| serde::ser::Error::custom("Invalid URL"))?,
     )
-    // match image_links {
-    //     Some(links) => serializer.serialize_str(
-    //         &serde_json::to_string(links)
-    //             .map_err(|_| serde::ser::Error::custom("Invalid URL"))?,
-    //     ),
-    //     None => serializer.serialize_none(),
-    // }
 }
 
 #[cfg(test)]
@@ -107,7 +78,6 @@ mod tests {
     #[test]
     fn test_split_image_links() {
         let image_links: &str = "'https://www.example.com/image1.jpg', 'https://www.example.com/image2.jpg'";
-        //let split = split_image_links(image_links);
         let split = image_links.split_image_links();
         assert_eq!(split, vec!["'https://www.example.com/image1.jpg'", "'https://www.example.com/image2.jpg'"]);
     }
@@ -115,7 +85,6 @@ mod tests {
     #[test]
     fn test_remove_single_quotes() {
         let image_links: &str = "'https://www.example.com/image1.jpg'";
-        // let removed = remove_single_quotes(image_links);
         let removed = image_links.remove_single_quotes();
         assert_eq!(removed, "https://www.example.com/image1.jpg");
     }
@@ -123,9 +92,7 @@ mod tests {
     #[test]
     fn test_parse_image_link() {
         let image_link: &str = "https://www.example.com/image1.jpg";
-        // let parsed = parse_image_link(image_link);
         let parsed = image_link.parse_image_link();
-        // assert_eq!(parsed, Some(Url::parse(image_link).unwrap()));
         assert_eq!(parsed, Ok(Some(Url::parse(image_link).unwrap())));
     }
 
