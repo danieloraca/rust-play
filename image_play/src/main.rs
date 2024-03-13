@@ -23,18 +23,25 @@ error_chain! {
 #[command(version, about, long_about = None)]
 struct Args {
     #[clap(short, long)]
+    width: Option<u32>,
     url: String,
 }
 
 fn get_url_from_args() -> String {
     let args = Args::parse();
-    
     args
         .url
         .to_string()
 }
 
-fn resize_image(fname: String) -> Result<()> {
+fn get_width_from_args() -> Option<u32> {
+    let args = Args::parse();
+    args
+        .width
+}
+
+fn resize_image(arg_width: Option<u32>, fname: String) -> Result<()> {
+    println!("Resizing image: {}", fname);
     let img = ImageReader::open(fname)
         .unwrap()
         .decode()
@@ -42,8 +49,6 @@ fn resize_image(fname: String) -> Result<()> {
 
     let width = NonZeroU32::new(img.width()).unwrap();
     let height = NonZeroU32::new(img.height()).unwrap();
-
-    println!("width: {}, height: {}", width, height);
 
     let mut src_image = fr::Image::from_vec_u8(
         width,
@@ -57,9 +62,12 @@ fn resize_image(fname: String) -> Result<()> {
         .multiply_alpha_inplace(&mut src_image.view_mut())
         .unwrap();
 
+    let w = arg_width.unwrap_or(800);
+    let h = (f64::from(w) * f64::from(height.get()) / f64::from(width.get())) as u32;
+
     // Create container for data of destination image
-    let dst_width = NonZeroU32::new(2000).unwrap();
-    let dst_height = NonZeroU32::new(1600).unwrap();
+    let dst_width = NonZeroU32::new(w).unwrap();
+    let dst_height = NonZeroU32::new(h).unwrap();
     let mut dst_image = fr::Image::new(
         dst_width,
         dst_height,
@@ -101,6 +109,8 @@ fn resize_image(fname: String) -> Result<()> {
 #[tokio::main]
 async fn main() -> Result<()> {
     let target = get_url_from_args();
+    let width = get_width_from_args();
+
     let response = reqwest::get(target).await?;
     let file_name: String;
 
@@ -121,7 +131,7 @@ async fn main() -> Result<()> {
     let mut content = Cursor::new(response.bytes().await?);
     copy(&mut content, &mut dest)?;
 
-    resize_image(file_name)?;
+    resize_image(width, file_name)?;
 
     Ok(())
 }
