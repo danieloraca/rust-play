@@ -1,1 +1,0 @@
-/Users/danieloraca/Development/rust-play/solar/target/debug/solar: /Users/danieloraca/Development/rust-play/solar/src/dynamo_db/mod.rs /Users/danieloraca/Development/rust-play/solar/src/main.rs /Users/danieloraca/Development/rust-play/solar/src/solar_systems/mod.rs

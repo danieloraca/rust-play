@@ -1,9 +1,0 @@
-/Users/danieloraca/Development/rust-play/solar/target/debug/deps/liblambda_runtime-8798b2a96b078772.rmeta: /Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/lambda_runtime-0.9.2/src/lib.rs /Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/lambda_runtime-0.9.2/src/deserializer.rs /Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/lambda_runtime-0.9.2/src/requests.rs /Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/lambda_runtime-0.9.2/src/streaming.rs /Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/lambda_runtime-0.9.2/src/types.rs
-
-/Users/danieloraca/Development/rust-play/solar/target/debug/deps/lambda_runtime-8798b2a96b078772.d: /Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/lambda_runtime-0.9.2/src/lib.rs /Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/lambda_runtime-0.9.2/src/deserializer.rs /Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/lambda_runtime-0.9.2/src/requests.rs /Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/lambda_runtime-0.9.2/src/streaming.rs /Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/lambda_runtime-0.9.2/src/types.rs
-
-/Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/lambda_runtime-0.9.2/src/lib.rs:
-/Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/lambda_runtime-0.9.2/src/deserializer.rs:
-/Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/lambda_runtime-0.9.2/src/requests.rs:
-/Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/lambda_runtime-0.9.2/src/streaming.rs:
-/Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/lambda_runtime-0.9.2/src/types.rs:
