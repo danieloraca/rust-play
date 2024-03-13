@@ -1,0 +1,9 @@
+/Users/danieloraca/Development/rust-play/solar/target/debug/deps/libaws_smithy_xml-11db4a9dbc1f7861.rmeta: /Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/aws-smithy-xml-0.60.5/src/lib.rs /Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/aws-smithy-xml-0.60.5/src/decode.rs /Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/aws-smithy-xml-0.60.5/src/encode.rs /Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/aws-smithy-xml-0.60.5/src/escape.rs /Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/aws-smithy-xml-0.60.5/src/unescape.rs
+
+/Users/danieloraca/Development/rust-play/solar/target/debug/deps/aws_smithy_xml-11db4a9dbc1f7861.d: /Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/aws-smithy-xml-0.60.5/src/lib.rs /Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/aws-smithy-xml-0.60.5/src/decode.rs /Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/aws-smithy-xml-0.60.5/src/encode.rs /Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/aws-smithy-xml-0.60.5/src/escape.rs /Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/aws-smithy-xml-0.60.5/src/unescape.rs
+
+/Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/aws-smithy-xml-0.60.5/src/lib.rs:
+/Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/aws-smithy-xml-0.60.5/src/decode.rs:
+/Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/aws-smithy-xml-0.60.5/src/encode.rs:
+/Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/aws-smithy-xml-0.60.5/src/escape.rs:
+/Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/aws-smithy-xml-0.60.5/src/unescape.rs:

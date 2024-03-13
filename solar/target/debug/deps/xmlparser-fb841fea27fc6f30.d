@@ -1,0 +1,11 @@
+/Users/danieloraca/Development/rust-play/solar/target/debug/deps/libxmlparser-fb841fea27fc6f30.rmeta: /Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/xmlparser-0.13.6/src/lib.rs /Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/xmlparser-0.13.6/src/error.rs /Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/xmlparser-0.13.6/src/stream.rs /Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/xmlparser-0.13.6/src/strspan.rs /Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/xmlparser-0.13.6/src/xmlchar.rs
+
+/Users/danieloraca/Development/rust-play/solar/target/debug/deps/libxmlparser-fb841fea27fc6f30.rlib: /Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/xmlparser-0.13.6/src/lib.rs /Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/xmlparser-0.13.6/src/error.rs /Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/xmlparser-0.13.6/src/stream.rs /Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/xmlparser-0.13.6/src/strspan.rs /Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/xmlparser-0.13.6/src/xmlchar.rs
+
+/Users/danieloraca/Development/rust-play/solar/target/debug/deps/xmlparser-fb841fea27fc6f30.d: /Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/xmlparser-0.13.6/src/lib.rs /Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/xmlparser-0.13.6/src/error.rs /Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/xmlparser-0.13.6/src/stream.rs /Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/xmlparser-0.13.6/src/strspan.rs /Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/xmlparser-0.13.6/src/xmlchar.rs
+
+/Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/xmlparser-0.13.6/src/lib.rs:
+/Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/xmlparser-0.13.6/src/error.rs:
+/Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/xmlparser-0.13.6/src/stream.rs:
+/Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/xmlparser-0.13.6/src/strspan.rs:
+/Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/xmlparser-0.13.6/src/xmlchar.rs:

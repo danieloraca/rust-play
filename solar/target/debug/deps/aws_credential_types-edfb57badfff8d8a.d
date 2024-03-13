@@ -1,0 +1,8 @@
+/Users/danieloraca/Development/rust-play/solar/target/debug/deps/libaws_credential_types-edfb57badfff8d8a.rmeta: /Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/aws-credential-types-1.1.5/src/lib.rs /Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/aws-credential-types-1.1.5/src/credential_fn.rs /Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/aws-credential-types-1.1.5/src/credentials_impl.rs /Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/aws-credential-types-1.1.5/src/provider.rs
+
+/Users/danieloraca/Development/rust-play/solar/target/debug/deps/aws_credential_types-edfb57badfff8d8a.d: /Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/aws-credential-types-1.1.5/src/lib.rs /Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/aws-credential-types-1.1.5/src/credential_fn.rs /Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/aws-credential-types-1.1.5/src/credentials_impl.rs /Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/aws-credential-types-1.1.5/src/provider.rs
+
+/Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/aws-credential-types-1.1.5/src/lib.rs:
+/Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/aws-credential-types-1.1.5/src/credential_fn.rs:
+/Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/aws-credential-types-1.1.5/src/credentials_impl.rs:
+/Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/aws-credential-types-1.1.5/src/provider.rs:
