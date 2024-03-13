@@ -23,7 +23,7 @@ async fn main() -> Result<()> {
             .unwrap_or("tmp.bin");
 
         println!("file to download: '{}'", fname);
-        let fname = format!("/Users/danieloraca/Development/rust-play/image_play/{}", fname);
+        let fname = format!("./{}", fname);
         println!("will be located under: '{:?}'", fname);
         File::create(fname)?
     };
