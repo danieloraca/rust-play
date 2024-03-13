@@ -17,14 +17,17 @@ struct Args {
     url: String,
 }
 
+fn get_url_from_args() -> String {
+    let args = Args::parse();
+    
+    args
+        .url
+        .to_string()
+}
+
 #[tokio::main]
 async fn main() -> Result<()> {
-    let args = Args::parse();
-    println!("Will download image from: {}", args.url);
-    let target = &args.url;
-
-    //let target = "https://www.rust-lang.org/logos/rust-logo-512x512.png";
-    //let target: &str = "https://ik.imagekit.io/theartling/prod/tr:w-1840,c-at_max/original_images/Sarah_Lee_Gesturebation.jpg";
+    let target = get_url_from_args();
     let response = reqwest::get(target).await?;
 
     let mut dest = {
@@ -42,6 +45,7 @@ async fn main() -> Result<()> {
     };
     let mut content = Cursor::new(response.bytes().await?);
     copy(&mut content, &mut dest)?;
+
     Ok(())
 }
 
