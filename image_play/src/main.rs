@@ -8,7 +8,13 @@ use image::io::Reader as ImageReader;
 use image::{ImageEncoder, ExtendedColorType};
 
 use std::num::NonZeroU32;
-use fast_image_resize as fr;
+use fast_image_resize::Image as fr_image;
+use fast_image_resize::Resizer as fr_resizer;
+use fast_image_resize::PixelType as fr_pixel_type;
+use fast_image_resize::MulDiv as fr_mul_div;
+use fast_image_resize::FilterType as fr_filter_type;
+use fast_image_resize::ResizeAlg as fr_resize_alg;
+
 use std::io::BufWriter;
 
 
@@ -41,7 +47,7 @@ fn get_width_from_args() -> Option<u32> {
 }
 
 fn resize_image(arg_width: Option<u32>, fname: String) -> Result<()> {
-    println!("Resizing image: {}", fname);
+    //println!("Resizing image: {}", fname);
     let img = ImageReader::open(fname)
         .unwrap()
         .decode()
@@ -50,14 +56,14 @@ fn resize_image(arg_width: Option<u32>, fname: String) -> Result<()> {
     let width = NonZeroU32::new(img.width()).unwrap();
     let height = NonZeroU32::new(img.height()).unwrap();
 
-    let mut src_image = fr::Image::from_vec_u8(
+    let mut src_image = fr_image::from_vec_u8(
         width,
         height,
         img.to_rgba8().into_raw(),
-        fr::PixelType::U8x4,
+        fr_pixel_type::U8x4,
     ).unwrap();
 
-    let alpha_mul_div = fr::MulDiv::default();
+    let alpha_mul_div = fr_mul_div::default();
     alpha_mul_div
         .multiply_alpha_inplace(&mut src_image.view_mut())
         .unwrap();
@@ -68,7 +74,7 @@ fn resize_image(arg_width: Option<u32>, fname: String) -> Result<()> {
     // Create container for data of destination image
     let dst_width = NonZeroU32::new(w).unwrap();
     let dst_height = NonZeroU32::new(h).unwrap();
-    let mut dst_image = fr::Image::new(
+    let mut dst_image = fr_image::new(
         dst_width,
         dst_height,
         src_image.pixel_type(),
@@ -79,8 +85,8 @@ fn resize_image(arg_width: Option<u32>, fname: String) -> Result<()> {
 
     // Create Resizer instance and resize source image
     // into buffer of destination image
-    let mut resizer = fr::Resizer::new(
-        fr::ResizeAlg::Convolution(fr::FilterType::Lanczos3),
+    let mut resizer = fr_resizer::new(
+        fr_resize_alg::Convolution(fr_filter_type::Lanczos3),
     );
     resizer.resize(&src_image.view(), &mut dst_view).unwrap();
 
@@ -122,10 +128,10 @@ async fn main() -> Result<()> {
             .and_then(|name| if name.is_empty() { None } else { Some(name) })
             .unwrap_or("tmp.bin");
 
-        println!("file to download: '{}'", &fname);
+        //println!("file to download: '{}'", &fname);
         let fname = format!("./{}", fname);
         file_name = fname.clone();
-        println!("will be located under: '{:?}'", fname);
+        //println!("will be located under: '{:?}'", fname);
         File::create(fname)?
     };
     let mut content = Cursor::new(response.bytes().await?);
