@@ -1,0 +1,12 @@
+/Users/danieloraca/Development/rust-play/threading/target/debug/deps/libuuid-0bc97ed675ee7a91.rmeta: /Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/uuid-1.8.0/src/lib.rs /Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/uuid-1.8.0/src/builder.rs /Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/uuid-1.8.0/src/error.rs /Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/uuid-1.8.0/src/parser.rs /Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/uuid-1.8.0/src/fmt.rs /Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/uuid-1.8.0/src/timestamp.rs /Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/uuid-1.8.0/src/external.rs /Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/uuid-1.8.0/src/macros.rs
+
+/Users/danieloraca/Development/rust-play/threading/target/debug/deps/uuid-0bc97ed675ee7a91.d: /Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/uuid-1.8.0/src/lib.rs /Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/uuid-1.8.0/src/builder.rs /Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/uuid-1.8.0/src/error.rs /Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/uuid-1.8.0/src/parser.rs /Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/uuid-1.8.0/src/fmt.rs /Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/uuid-1.8.0/src/timestamp.rs /Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/uuid-1.8.0/src/external.rs /Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/uuid-1.8.0/src/macros.rs
+
+/Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/uuid-1.8.0/src/lib.rs:
+/Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/uuid-1.8.0/src/builder.rs:
+/Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/uuid-1.8.0/src/error.rs:
+/Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/uuid-1.8.0/src/parser.rs:
+/Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/uuid-1.8.0/src/fmt.rs:
+/Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/uuid-1.8.0/src/timestamp.rs:
+/Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/uuid-1.8.0/src/external.rs:
+/Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/uuid-1.8.0/src/macros.rs:

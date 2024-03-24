@@ -1,0 +1,10 @@
+/Users/danieloraca/Development/rust-play/threading/target/debug/deps/libos_str_bytes-e74edfed00ea7e88.rmeta: /Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/os_str_bytes-6.6.1/src/lib.rs /Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/os_str_bytes-6.6.1/src/common/mod.rs /Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/os_str_bytes-6.6.1/src/common/raw.rs /Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/os_str_bytes-6.6.1/src/iter.rs /Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/os_str_bytes-6.6.1/src/pattern.rs /Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/os_str_bytes-6.6.1/src/raw_str.rs
+
+/Users/danieloraca/Development/rust-play/threading/target/debug/deps/os_str_bytes-e74edfed00ea7e88.d: /Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/os_str_bytes-6.6.1/src/lib.rs /Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/os_str_bytes-6.6.1/src/common/mod.rs /Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/os_str_bytes-6.6.1/src/common/raw.rs /Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/os_str_bytes-6.6.1/src/iter.rs /Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/os_str_bytes-6.6.1/src/pattern.rs /Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/os_str_bytes-6.6.1/src/raw_str.rs
+
+/Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/os_str_bytes-6.6.1/src/lib.rs:
+/Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/os_str_bytes-6.6.1/src/common/mod.rs:
+/Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/os_str_bytes-6.6.1/src/common/raw.rs:
+/Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/os_str_bytes-6.6.1/src/iter.rs:
+/Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/os_str_bytes-6.6.1/src/pattern.rs:
+/Users/danieloraca/.cargo/registry/src/index.crates.io-6f17d22bba15001f/os_str_bytes-6.6.1/src/raw_str.rs:
