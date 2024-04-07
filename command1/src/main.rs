@@ -3,7 +3,11 @@ use std::process::{Command, Stdio};
 
 macro_rules! print_line {
     ($line:expr) => {{
-        let msg = $line.blue().on_yellow();
+        let parts: Vec<&str> = $line.split_whitespace().collect();
+        // for part in parts {
+        //     print!("{part}||");
+        // }
+        let msg = $line.white().on_black();
         println!("{msg}");
         println!("{}", "-".repeat(get_screen_size()));
     }};
@@ -22,7 +26,7 @@ fn main() {
     let mut command: Command = Command::new("ls");
     command.arg("-la");
 
-    let output = Command::new("ls")
+    let output = command
         // Tell the OS to record the command's output
         .stdout(Stdio::piped())
         // execute the command, wait for it to complete, then capture the output
