@@ -1,5 +1,8 @@
 use colored::*;
-use std::process::{Command, Stdio};
+use std::{
+    i32,
+    process::{Command, Stdio},
+};
 
 macro_rules! print_line {
     ($line:expr) => {{
@@ -38,4 +41,11 @@ fn main() {
     let stdout = String::from_utf8(output.stdout).unwrap();
 
     stdout.lines().for_each(|line| print_line!(line));
+
+    let int_number: u32 = 50048 - 49856;
+    if let Some(the_char) = std::char::from_u32(int_number) {
+        println!("{}", the_char);
+    } else {
+        println!("sucks");
+    }
 }
