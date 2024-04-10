@@ -1,9 +1,10 @@
-use std::{thread::self};
 use csv::Writer;
 use micro_rand::*;
-use std::sync::{mpsc, Arc};
-use uuid::Uuid;
 use names::Generator;
+use std::fs::File;
+use std::sync::{mpsc, Arc, Mutex};
+use std::thread;
+use uuid::Uuid;
 
 struct CsvRow {
     id: Uuid,
@@ -14,10 +15,13 @@ struct CsvRow {
 
 fn main() {
     let output_file = "output.csv";
-    let mut writer = Writer::from_path(output_file).expect("Cannot create csv writer");
+    //let mut writer = Writer::from_path(output_file).expect("Cannot create csv writer");
+    let file = Mutex::new(File::create(output_file).expect("Cannot create csv file"));
+
+    let writer = Arc::new(file);
 
     let (tx, rx) = mpsc::channel();
-    let tx = Arc::new(tx);
+    let tx = Arc::new(Mutex::new(tx));
 
     let num_threads = 6;
     let max_rows = 1_000_000;
@@ -30,23 +34,49 @@ fn main() {
             let mut r = Random::new(123475765765);
             let mut generator: Generator = Generator::default();
             for _ in 0..rows_per_thread {
-                let id = Uuid::new_v4();
+                //let id = Uuid::new_v4();
                 let name: String = generator.next().unwrap();
-                let age = r.next_int_i32(18, 99) as u8;
-                let email = format!("{}@gmail.com", name.to_lowercase());
-                let person = CsvRow { id, name, age, email };
+                //let age = r.next_int_i32(18, 99) as u8;
+                //let email = format!("{}@gmail.com", name.to_lowercase());
+                //let person = CsvRow { id, name, age, email };
 
-                rows.push(person);
+                let person = CsvRow {
+                    id: Uuid::new_v4(),
+                    name,
+                    age: r.next_int_i32(18, 99) as u8,
+                    email: generator.next().unwrap().to_lowercase() + "@gmail.com",
+                };
+
+                let tx = tx.lock().unwrap();
+                tx.send(person).expect("Cannot send person");
+                //rows.push(person);
             }
-            let _ = tx.send(rows);
+            //let _ = tx.send(rows);
         });
     }
 
     drop(tx);
 
+    //let mut writer = writer.lock().unwrap();
+    //let mut csv_writer = Writer::from_writer(&mut *writer);
+
+    let mut csv_writer = {
+        let writer = writer.lock().unwrap();
+        Writer::from_writer(writer)
+    };
+
     for received in rx {
-        for record in received {
-                        writer.write_record(&[format!("{},{},{},{}", record.id, record.name, record.age, record.email)]).expect("Cannot write record");
-        }
+        //for record in received {
+        //                writer.write_record(&[format!("{},{},{},{}", record.id, record.name, record.age, record.email)]).expect("Cannot write record");
+        //}
+
+        csv_writer
+            .write_record(&[
+                received.id.to_string(),
+                received.name,
+                received.age.to_string(),
+                received.email,
+            ])
+            .expect("Failed to write record");
     }
 }
