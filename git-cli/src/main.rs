@@ -31,9 +31,6 @@ fn main() {
     chat_command.arg(final_question);
 
     let result = chat_command.stdout(Stdio::piped()).output().unwrap();
-    let stdout = String::from_utf8(result.stdout).unwrap();
-
-    stdout.lines().for_each(|line| {
-        println!("{line}");
-    });
+    let chatgpt_commit_comment: String = String::from_utf8(result.stdout).unwrap();
+    println!("{chatgpt_commit_comment}");
 }
