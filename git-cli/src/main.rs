@@ -1,5 +1,8 @@
 use std::process::{Command, Stdio};
 
+const CHATGPT_QUESTION: &str =
+    "From the above git diff describe the changes in less than 10 words as a commit message";
+
 fn fire_command(command_cli: &str, command_arguments: &str) -> String {
     let mut command: Command = Command::new(command_cli);
     command.arg(command_arguments);
@@ -23,9 +26,7 @@ fn read_git_diff() -> Vec<String> {
 fn main() {
     let git_diff: Vec<String> = read_git_diff();
     let concatenated_lines: String = git_diff.join("\n");
-    let chatgpt_question: &str =
-        "Can you make a pr commit message from the above git diff? No more than 15 words. Just the commit message, nothing extra. If no diff, return this text: NO CHANGES";
-    let final_question: String = format!("{} {}", concatenated_lines.to_string(), chatgpt_question);
+    let final_question: String = format!("{} {}", concatenated_lines.to_string(), CHATGPT_QUESTION);
 
     let mut chat_command: Command = Command::new("/Users/danieloraca/git-cli/rust-chatgpt-cli");
     chat_command.arg(final_question);
