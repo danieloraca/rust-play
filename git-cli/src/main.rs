@@ -23,10 +23,10 @@ fn main() {
     let git_diff: Vec<String> = read_git_diff();
     let concatenated_lines: String = git_diff.join("\n");
     let chatgpt_question: &str =
-        "Can you make a pr comment from the above git diff? No more than 15 words. Just the comment, nothing extra";
+        "Can you make a pr commit message from the above git diff? No more than 15 words. Just the commit message, nothing extra. If no diff, return this text: NO CHANGES";
     let final_question: String = format!("{} {}", concatenated_lines.to_string(), chatgpt_question);
 
-    let mut chat_command: Command = Command::new("./rust-chatgpt-cli");
+    let mut chat_command: Command = Command::new("/Users/danieloraca/git-cli/rust-chatgpt-cli");
     chat_command.arg(final_question);
 
     let result = chat_command.stdout(Stdio::piped()).output().unwrap();

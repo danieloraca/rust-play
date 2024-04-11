@@ -11,3 +11,9 @@ micro_rand = "0.0.1"
 names = "0.14.0"
 uuid = { version = "1.8.0", features = ["v4"] }
 
+[profile.release]
+opt-level = 'z'     # Optimize for size.
+lto = true          # Enable Link Time Optimization
+codegen-units = 1   # Reduce number of codegen units to increase optimizations.
+panic = 'abort'     # Abort on panic
+
