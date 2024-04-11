@@ -1,18 +1,19 @@
-use std::{
-    io::Stdout,
-    process::{Command, Stdio},
-};
+use std::process::{Command, Stdio};
 
-fn read_git_diff() -> Vec<String> {
-    let mut lines: Vec<String> = vec![];
-    let mut command: Command = Command::new("/usr/bin/git");
-    command.arg("diff");
+fn fire_command(command_cli: &str, command_arguments: &str) -> String {
+    let mut command: Command = Command::new(command_cli);
+    command.arg(command_arguments);
 
     let command_result = command.stdout(Stdio::piped()).output().unwrap();
 
-    let stdout = String::from_utf8(command_result.stdout).unwrap();
+    String::from_utf8(command_result.stdout).unwrap()
+}
 
-    stdout.lines().for_each(|line| {
+fn read_git_diff() -> Vec<String> {
+    let mut lines: Vec<String> = vec![];
+
+    let diff_output = fire_command("/usr/bin/git", "diff");
+    diff_output.lines().for_each(|line| {
         lines.push(line.to_string());
     });
 
