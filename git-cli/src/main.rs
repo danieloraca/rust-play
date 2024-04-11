@@ -33,5 +33,10 @@ fn main() {
 
     let result = chat_command.stdout(Stdio::piped()).output().unwrap();
     let chatgpt_commit_comment: String = String::from_utf8(result.stdout).unwrap();
-    println!("{chatgpt_commit_comment}");
+    println!("commit -am \"{}\"", chatgpt_commit_comment.trim());
+
+    let commit_arg: String = format!("commit -am \"{}\"", chatgpt_commit_comment.trim());
+
+    fire_command("/usr/bin/git", &commit_arg);
+    fire_command("/usr/bin/git", "push");
 }
