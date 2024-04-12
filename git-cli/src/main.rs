@@ -1,7 +1,7 @@
 use std::process::{Command, Output, Stdio};
 
 const CHATGPT_QUESTION: &str =
-    "Please make in less than 10 words a commit message from the above diff";
+    "\nPlease make in less than 10 words a commit message from the above diff";
 
 fn fire_command(command_cli: &str, command_arguments: &str) -> String {
     let mut command: Command = Command::new(command_cli);
@@ -14,7 +14,6 @@ fn fire_command(command_cli: &str, command_arguments: &str) -> String {
 
 fn talk_to_chatgpt(concatenated_lines: String) -> String {
     let final_question: String = format!("{} {}", concatenated_lines.to_string(), CHATGPT_QUESTION);
-    println!("{final_question}");
 
     let chat_response = fire_command(
         "/Users/danieloraca/git-cli/rust-chatgpt-cli",
