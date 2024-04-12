@@ -1,4 +1,4 @@
-use std::process::{Command, ExitCode, Stdio};
+use std::process::{Command, Stdio};
 
 const CHATGPT_QUESTION: &str =
     "From the above git diff describe the changes in less than 10 words as a commit message";
@@ -27,7 +27,7 @@ fn main() {
     let git_diff: Vec<String> = read_git_diff();
     let concatenated_lines: String = git_diff.join("\n");
 
-    if (concatenated_lines.is_empty()) {
+    if concatenated_lines.is_empty() {
         println!("Nohing to commit");
         std::process::exit(0);
     }
