@@ -1,9 +1,14 @@
-use std::process::{Command, Output, Stdio};
+use std::process::{Command, Stdio};
 
 const CHATGPT_QUESTION: &str =
     "\nPlease make in less than 10 words a commit message from the above diff";
 
-fn fire_command(command_cli: &str, command_arguments: &str) -> String {
+const GIT_LOCATION: &str = "/usr/bin/git";
+const GIT_DIFF: &str = "diff";
+const GIT_PUSH: &str = "push";
+const CHATGPT_CLI: &str = "/Users/danieloraca/git-cli/rust-chatgpt-cli";
+
+fn fire_command(command_cli: String, command_arguments: String) -> String {
     let mut command: Command = Command::new(command_cli);
     command.arg(command_arguments);
 
@@ -15,10 +20,7 @@ fn fire_command(command_cli: &str, command_arguments: &str) -> String {
 fn talk_to_chatgpt(concatenated_lines: String) -> String {
     let final_question: String = format!("{} {}", concatenated_lines.to_string(), CHATGPT_QUESTION);
 
-    let chat_response = fire_command(
-        "/Users/danieloraca/git-cli/rust-chatgpt-cli",
-        &final_question,
-    );
+    let chat_response = fire_command(CHATGPT_CLI.to_string(), final_question);
 
     chat_response
 }
@@ -26,7 +28,7 @@ fn talk_to_chatgpt(concatenated_lines: String) -> String {
 fn read_git_diff() -> Vec<String> {
     let mut lines: Vec<String> = vec![];
 
-    let diff_output = fire_command("/usr/bin/git", "diff");
+    let diff_output: String = fire_command(GIT_LOCATION.to_string(), GIT_DIFF.to_string());
     diff_output.lines().for_each(|line| {
         lines.push(line.to_string());
     });
@@ -49,12 +51,12 @@ fn main() {
 
     let commit_arg: String = format!("commit -am \"{}\"", chatgpt_commit_message.trim());
 
-    let commit = fire_command("/usr/bin/git", &commit_arg);
+    let commit_output: String = fire_command(GIT_LOCATION.to_string(), commit_arg);
 
-    commit.lines().for_each(|line| {
-        println!("{line}");
+    commit_output.lines().for_each(|line| {
+        println!("line is {line}");
     });
 
-    let push = fire_command("/usr/bin/git", "push");
+    let push = fire_command(GIT_LOCATION.to_string(), GIT_PUSH.to_string());
     println!("{push}");
 }
