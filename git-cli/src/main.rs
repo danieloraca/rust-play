@@ -49,6 +49,12 @@ fn main() {
 
     let commit_arg: String = format!("commit -am \"{}\"", chatgpt_commit_message.trim());
 
-    fire_command("/usr/bin/git", &commit_arg);
-    fire_command("/usr/bin/git", "push");
+    let commit = fire_command("/usr/bin/git", &commit_arg);
+
+    commit.lines().for_each(|line| {
+        println!("{line}");
+    });
+
+    let push = fire_command("/usr/bin/git", "push");
+    println!("{push}");
 }
