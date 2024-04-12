@@ -26,6 +26,8 @@ fn read_git_diff() -> Vec<String> {
 fn main() {
     let git_diff: Vec<String> = read_git_diff();
     let concatenated_lines: String = git_diff.join("\n");
+    println!("{concatenated_lines}");
+
     let final_question: String = format!("{} {}", concatenated_lines.to_string(), CHATGPT_QUESTION);
 
     let mut chat_command: Command = Command::new("/Users/danieloraca/git-cli/rust-chatgpt-cli");
