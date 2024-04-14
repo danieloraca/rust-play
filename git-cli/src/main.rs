@@ -23,9 +23,7 @@ fn fire_command(command_cli: Box<str>, command_arguments: Box<str>) -> String {
 fn talk_to_chatgpt(concatenated_lines: Arc<str>) -> String {
     let final_question: String = format!("{} {}", concatenated_lines, CHATGPT_QUESTION);
 
-    let chat_response = fire_command(CHATGPT_CLI.into(), final_question.into());
-
-    chat_response
+    fire_command(CHATGPT_CLI.into(), final_question.into())
 }
 
 fn read_git_diff() -> Arc<str> {
