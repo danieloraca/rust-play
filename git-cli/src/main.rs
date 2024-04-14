@@ -18,7 +18,7 @@ fn fire_command(command_cli: Box<str>, command_arguments: Box<str>) -> String {
 }
 
 fn talk_to_chatgpt(concatenated_lines: String) -> String {
-    let final_question: String = format!("{} {}", concatenated_lines.to_string(), CHATGPT_QUESTION);
+    let final_question: String = format!("{} {}", concatenated_lines, CHATGPT_QUESTION);
 
     let chat_response = fire_command(CHATGPT_CLI.into(), final_question.into());
 
