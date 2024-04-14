@@ -11,16 +11,17 @@ const GIT_DIFF: &str = "diff";
 const GIT_PUSH: &str = "push";
 const CHATGPT_CLI: &str = "/Users/danieloraca/git-cli/rust-chatgpt-cli";
 
-fn fire_command(command_cli: Box<str>, command_arguments: Box<str>) -> String {
-    let mut command: Command = Command::new(command_cli.to_string());
-    command.arg(command_arguments.to_string());
+fn fire_command(command_cli: Box<str>, command_arguments: Box<str>) -> Arc<str> {
+    let mut command: Command = Command::new(&*command_cli);
+    command.arg(&*command_arguments);
 
     let command_result = command.stdout(Stdio::piped()).output().unwrap();
 
-    String::from_utf8(command_result.stdout).unwrap()
+    let result_str: String = String::from_utf8(command_result.stdout).unwrap();
+    Arc::from(result_str.trim())
 }
 
-fn talk_to_chatgpt(concatenated_lines: Arc<str>) -> String {
+fn talk_to_chatgpt(concatenated_lines: Arc<str>) -> Arc<str> {
     let final_question: String = format!("{} {}", concatenated_lines, CHATGPT_QUESTION);
 
     fire_command(CHATGPT_CLI.into(), final_question.into())
@@ -29,7 +30,7 @@ fn talk_to_chatgpt(concatenated_lines: Arc<str>) -> String {
 fn read_git_diff() -> Arc<str> {
     let mut lines: Vec<String> = vec![];
 
-    let diff_output: String = fire_command(GIT_LOCATION.into(), GIT_DIFF.into());
+    let diff_output: Arc<str> = fire_command(GIT_LOCATION.into(), GIT_DIFF.into());
     diff_output.lines().for_each(|line| {
         lines.push(line.to_string());
     });
@@ -53,7 +54,7 @@ fn main() {
 
     let commit_arg: String = format!("commit -am \"{}\"", chatgpt_commit_message.trim());
 
-    let commit_output: String = fire_command(GIT_LOCATION.into(), commit_arg.into());
+    let commit_output: Arc<str> = fire_command(GIT_LOCATION.into(), commit_arg.into());
 
     commit_output.lines().for_each(|line| {
         println!("line is {line}");
@@ -62,10 +63,10 @@ fn main() {
     let push = fire_command(GIT_LOCATION.into(), GIT_PUSH.into());
     println!("{push}");
 
-    let status_output: String = fire_command(GIT_LOCATION.into(), "status".into());
+    let status_output: Arc<str> = fire_command(GIT_LOCATION.into(), "status".into());
     println!("Git Status Output: {}", status_output);
 
-    let ls_output: String = fire_command("ls".into(), "-la".into());
+    let ls_output: Arc<str> = fire_command("ls".into(), "-la".into());
     ls_output.lines().for_each(|line| {
         println!("{line}");
     })
