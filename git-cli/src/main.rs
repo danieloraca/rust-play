@@ -43,7 +43,6 @@ fn read_git_diff() -> Arc<str> {
 
 fn main() {
     let concatenated_lines: Arc<str> = read_git_diff();
-    //let concatenated_lines: String = git_diff.join("\n");
 
     if concatenated_lines.is_empty() {
         println!("Nohing to commit");
