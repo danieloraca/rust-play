@@ -1,16 +1,16 @@
 use std::process::{Command, Stdio};
 
 const CHATGPT_QUESTION: &str =
-    "\nPlease make in less than 10 words a commit message from the above diff";
+    "\nPlease make in less than 15 words a commit message from the above diff.";
 
 const GIT_LOCATION: &str = "/usr/bin/git";
 const GIT_DIFF: &str = "diff";
 const GIT_PUSH: &str = "push";
 const CHATGPT_CLI: &str = "/Users/danieloraca/git-cli/rust-chatgpt-cli";
 
-fn fire_command(command_cli: String, command_arguments: String) -> String {
-    let mut command: Command = Command::new(command_cli);
-    command.arg(command_arguments);
+fn fire_command(command_cli: Box<str>, command_arguments: Box<str>) -> String {
+    let mut command: Command = Command::new(command_cli.to_string());
+    command.arg(command_arguments.to_string());
 
     let command_result = command.stdout(Stdio::piped()).output().unwrap();
 
@@ -20,7 +20,7 @@ fn fire_command(command_cli: String, command_arguments: String) -> String {
 fn talk_to_chatgpt(concatenated_lines: String) -> String {
     let final_question: String = format!("{} {}", concatenated_lines.to_string(), CHATGPT_QUESTION);
 
-    let chat_response = fire_command(CHATGPT_CLI.to_string(), final_question);
+    let chat_response = fire_command(CHATGPT_CLI.into(), final_question.into());
 
     chat_response
 }
@@ -28,7 +28,7 @@ fn talk_to_chatgpt(concatenated_lines: String) -> String {
 fn read_git_diff() -> Vec<String> {
     let mut lines: Vec<String> = vec![];
 
-    let diff_output: String = fire_command(GIT_LOCATION.to_string(), GIT_DIFF.to_string());
+    let diff_output: String = fire_command(GIT_LOCATION.into(), GIT_DIFF.into());
     diff_output.lines().for_each(|line| {
         lines.push(line.to_string());
     });
@@ -51,12 +51,20 @@ fn main() {
 
     let commit_arg: String = format!("commit -am \"{}\"", chatgpt_commit_message.trim());
 
-    let commit_output: String = fire_command(GIT_LOCATION.to_string(), commit_arg);
+    let commit_output: String = fire_command(GIT_LOCATION.into(), commit_arg.into());
 
     commit_output.lines().for_each(|line| {
         println!("line is {line}");
     });
 
-    let push = fire_command(GIT_LOCATION.to_string(), GIT_PUSH.to_string());
+    let push = fire_command(GIT_LOCATION.into(), GIT_PUSH.into());
     println!("{push}");
+
+    let status_output: String = fire_command(GIT_LOCATION.into(), "status".into());
+    println!("Git Status Output: {}", status_output);
+
+    let ls_output: String = fire_command("ls".into(), "-la".into());
+    ls_output.lines().for_each(|line| {
+        println!("{line}");
+    })
 }
