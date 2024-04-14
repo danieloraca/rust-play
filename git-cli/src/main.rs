@@ -1,4 +1,7 @@
-use std::process::{Command, Stdio};
+use std::{
+    process::{Command, Stdio},
+    sync::Arc,
+};
 
 const CHATGPT_QUESTION: &str =
     "\nPlease make in less than 15 words a commit message from the above diff.";
@@ -17,7 +20,7 @@ fn fire_command(command_cli: Box<str>, command_arguments: Box<str>) -> String {
     String::from_utf8(command_result.stdout).unwrap()
 }
 
-fn talk_to_chatgpt(concatenated_lines: String) -> String {
+fn talk_to_chatgpt(concatenated_lines: Arc<str>) -> String {
     let final_question: String = format!("{} {}", concatenated_lines, CHATGPT_QUESTION);
 
     let chat_response = fire_command(CHATGPT_CLI.into(), final_question.into());
@@ -25,7 +28,7 @@ fn talk_to_chatgpt(concatenated_lines: String) -> String {
     chat_response
 }
 
-fn read_git_diff() -> Vec<String> {
+fn read_git_diff() -> Arc<str> {
     let mut lines: Vec<String> = vec![];
 
     let diff_output: String = fire_command(GIT_LOCATION.into(), GIT_DIFF.into());
@@ -33,12 +36,14 @@ fn read_git_diff() -> Vec<String> {
         lines.push(line.to_string());
     });
 
-    lines
+    let concatenated_lines = lines.join("\n");
+
+    Arc::from(&*concatenated_lines)
 }
 
 fn main() {
-    let git_diff: Vec<String> = read_git_diff();
-    let concatenated_lines: String = git_diff.join("\n");
+    let concatenated_lines: Arc<str> = read_git_diff();
+    //let concatenated_lines: String = git_diff.join("\n");
 
     if concatenated_lines.is_empty() {
         println!("Nohing to commit");
