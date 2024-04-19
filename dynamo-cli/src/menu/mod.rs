@@ -3,14 +3,14 @@ use dialoguer::{theme::ColorfulTheme, Input, Select};
 use tokio::runtime::Runtime;
 
 pub fn show_menu() {
-    let mut rt = Runtime::new().unwrap();
+    let rt = Runtime::new().unwrap();
 
     loop {
         let options = vec!["Get Integration", "Option 2", "Exit"];
         let selection = Select::with_theme(&ColorfulTheme::default())
             .with_prompt("Select an option:")
             .items(&options)
-            .default(0) // Set default selection to Option 1
+            .default(0) // Default to first option
             .interact()
             .unwrap();
 
