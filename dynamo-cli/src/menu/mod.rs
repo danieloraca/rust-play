@@ -1,4 +1,5 @@
 use crate::dynamo;
+use crate::processor;
 use dialoguer::{theme::ColorfulTheme, Input, Select};
 use tokio::runtime::Runtime;
 
@@ -27,6 +28,7 @@ pub fn show_menu() {
 
                 match result {
                     Ok(result) => {
+                        let integration = processor::process_integration(&result);
                         println!("Result: {:?}", result);
                     }
                     Err(e) => {

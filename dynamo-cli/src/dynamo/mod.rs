@@ -1,13 +1,17 @@
 use aws_config::BehaviorVersion;
 use aws_sdk_dynamodb::{types::AttributeValue, Client, Error};
 use std::collections::HashMap;
+extern crate serde;
+extern crate serde_dynamodb;
 
 #[derive(Debug)]
 pub enum ListItemsResult {
     Array(Vec<HashMap<String, AttributeValue>>),
 }
 
-pub async fn get_integration(integration_id: &str) -> Result<ListItemsResult, Error> {
+pub async fn get_integration(
+    integration_id: &str,
+) -> Result<Vec<HashMap<String, AttributeValue>>, Error> {
     println!("Querying for integration Id: {}", integration_id);
 
     //I#01HV177W1JAS01D5J3EZDSKCC0
@@ -15,7 +19,6 @@ pub async fn get_integration(integration_id: &str) -> Result<ListItemsResult, Er
     let shared_config = aws_config::load_defaults(BehaviorVersion::latest()).await;
     let client = Client::new(&shared_config);
 
-    println!("{}", shared_config.region().unwrap().as_ref());
     let result = client
         .query()
         .table_name("Stage-Integrations")
@@ -27,13 +30,10 @@ pub async fn get_integration(integration_id: &str) -> Result<ListItemsResult, Er
         .send()
         .await?;
 
-    println!("Finished query");
-
     if let Some(items) = result.items {
-        println!("Found {} items", items.len());
-        return Ok(ListItemsResult::Array(items));
+        return Ok(items);
     }
 
     println!("No items found");
-    Ok(ListItemsResult::Array(vec![]))
+    Ok(vec![])
 }
