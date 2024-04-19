@@ -1,3 +1,4 @@
+mod dynamo;
 mod menu;
 
 fn main() {
