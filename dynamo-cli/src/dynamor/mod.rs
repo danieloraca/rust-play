@@ -65,9 +65,7 @@ pub struct AuthDetail {
     code: String,
 }
 
-pub async fn get_integration(integration_id: &str) -> Result<Integration, ()> {
-    println!("Hello, world! {:?}", integration_id);
-
+pub async fn get_integration(integration_id: &str) -> Result<String, ()> {
     let client = DynamoDbClient::new(Region::EuWest1);
     let mut query = HashMap::new();
 
@@ -285,40 +283,7 @@ pub async fn get_integration(integration_id: &str) -> Result<Integration, ()> {
         })
         .collect();
 
-    let integration = Integration {
-        pk: integrations[0].pk.clone(),
-        sk: integrations[0].sk.clone(),
-        own_id: integrations[0].own_id.clone(),
-        cr_at: integrations[0].cr_at.clone(),
-        up_at: integrations[0].up_at.clone(),
-        pri_con: PrimaryConnection {
-            connection_type: integrations[0].pri_con.connection_type.clone(),
-            connection_name: integrations[0].pri_con.connection_name.clone(),
-            account_id: integrations[0].pri_con.account_id.clone(),
-        },
-        sec_con: SecondaryConnection {
-            connection_name: integrations[0].sec_con.connection_name.clone(),
-            account_id: integrations[0].sec_con.account_id.clone(),
-            connection_type: integrations[0].sec_con.connection_type.clone(),
-            api_domain: integrations[0].sec_con.api_domain.clone(),
-        },
-        pri_auth: integrations[0].pri_auth.clone(),
-        sec_auth: integrations[0].sec_auth.clone(),
-        i_status: IntegrationStatus {
-            setup_complete: SetupComplete {
-                primary: integrations[0].i_status.setup_complete.primary,
-                secondary: integrations[0].i_status.setup_complete.secondary,
-            },
-            auth: AuthStatus {
-                secondary: AuthDetail {
-                    code: integrations[0].i_status.auth.secondary.code.clone(),
-                },
-                primary: AuthDetail {
-                    code: integrations[0].i_status.auth.primary.code.clone(),
-                },
-            },
-        },
-    };
+    let serialized = serde_json::to_string_pretty(&integrations).unwrap();
 
-    Ok(integration)
+    Ok(serialized)
 }

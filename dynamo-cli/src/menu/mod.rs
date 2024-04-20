@@ -47,7 +47,10 @@ pub fn show_menu() {
                 });
                 match result {
                     Ok(result) => {
-                        println!("Result: {:?}", result);
+                        println!(
+                            "Integration id {} is {}",
+                            "I#01HV177W1JAS01D5J3EZDSKCC0", result
+                        );
                     }
                     Err(e) => {
                         println!("Error: {:?}", e);
