@@ -3,9 +3,7 @@ extern crate serde_dynamodb;
 
 extern crate rusoto_core;
 extern crate rusoto_dynamodb;
-use serde_json::{from_str, Value};
-// #[macro_use]
-// extern crate serde_derive;
+
 use rusoto_core::Region;
 use rusoto_dynamodb::{AttributeValue, DynamoDb, DynamoDbClient, QueryInput};
 use serde::{Deserialize, Serialize};
