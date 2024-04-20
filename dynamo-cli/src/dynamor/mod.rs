@@ -1,67 +1,16 @@
+extern crate rusoto_core;
+extern crate rusoto_dynamodb;
 extern crate serde;
 extern crate serde_dynamodb;
 
-extern crate rusoto_core;
-extern crate rusoto_dynamodb;
+use crate::types::{
+    AuthDetail, AuthStatus, Integration, IntegrationStatus, PrimaryConnection, SecondaryConnection,
+    SetupComplete,
+};
 
 use rusoto_core::Region;
 use rusoto_dynamodb::{AttributeValue, DynamoDb, DynamoDbClient, QueryInput};
-use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
-
-#[derive(Serialize, Deserialize, Debug)]
-pub struct Integration {
-    pk: String,
-    sk: String,
-    own_id: String,
-    cr_at: String,
-    up_at: String,
-    pri_con: PrimaryConnection,
-    sec_con: SecondaryConnection,
-    pri_auth: String,
-    sec_auth: String,
-    i_status: IntegrationStatus,
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-pub struct PrimaryConnection {
-    #[serde(rename = "ConnectionType")]
-    connection_type: String,
-    connection_name: String,
-    account_id: String,
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-pub struct SecondaryConnection {
-    connection_name: String,
-    account_id: String,
-    #[serde(rename = "ConnectionType")]
-    connection_type: String,
-    api_domain: String,
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-pub struct IntegrationStatus {
-    setup_complete: SetupComplete,
-    auth: AuthStatus,
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-pub struct SetupComplete {
-    primary: bool,
-    secondary: bool,
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-pub struct AuthStatus {
-    secondary: AuthDetail,
-    primary: AuthDetail,
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-pub struct AuthDetail {
-    code: String,
-}
 
 pub async fn get_integration(integration_id: &str) -> Result<String, ()> {
     let client = DynamoDbClient::new(Region::EuWest1);
