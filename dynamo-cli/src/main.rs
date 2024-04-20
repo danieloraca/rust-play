@@ -1,4 +1,5 @@
 mod dynamo;
+mod dynamor;
 mod menu;
 mod processor;
 

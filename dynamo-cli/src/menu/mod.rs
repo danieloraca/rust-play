@@ -1,4 +1,5 @@
 use crate::dynamo;
+use crate::dynamor;
 use crate::processor;
 use dialoguer::{theme::ColorfulTheme, Input, Select};
 use tokio::runtime::Runtime;
@@ -22,9 +23,12 @@ pub fn show_menu() {
                     .with_prompt("Enter integration id:")
                     .interact()
                     .unwrap();
-                let input_clone = input.clone();
+                let integration_id_hardcoded: &str = "I#01HV177W1JAS01D5J3EZDSKCC0";
                 let result =
-                    rt.block_on(async { dynamo::get_integration(input_clone.as_str()).await });
+                    rt.block_on(async { dynamo::get_integration(integration_id_hardcoded).await });
+                // let input_clone = input.clone();
+                // let result =
+                //     rt.block_on(async { dynamo::get_integration(input_clone.as_str()).await });
 
                 match result {
                     Ok(result) => {
@@ -38,7 +42,17 @@ pub fn show_menu() {
             }
             1 => {
                 println!("You selected Option 2!");
-                // Place your code for Option 2 here
+                let result = rt.block_on(async {
+                    dynamor::get_integration("I#01HV177W1JAS01D5J3EZDSKCC0").await
+                });
+                match result {
+                    Ok(result) => {
+                        println!("Result: {:?}", result);
+                    }
+                    Err(e) => {
+                        println!("Error: {:?}", e);
+                    }
+                }
             }
             2 => {
                 println!("Exiting...");

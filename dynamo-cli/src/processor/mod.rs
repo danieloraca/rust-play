@@ -2,6 +2,7 @@ use crate::dynamo::ListItemsResult;
 use aws_sdk_dynamodb::types::AttributeValue;
 use serde::{Deserialize, Serialize};
 use serde_dynamodb;
+use serde_json::{from_str, Value};
 use std::collections::HashMap;
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -57,5 +58,38 @@ struct AuthDetail {
 }
 
 pub fn process_integration(list_items_result: &Vec<HashMap<String, AttributeValue>>) -> &str {
+    // let json_values: Vec<Value> = list_items_result
+    //     .iter()
+    //     .map(|item| {
+    //         let mut json_item = HashMap::new();
+    //         item.iter().for_each(|(key, value)| {
+    //             let key = key.to_string();
+    //             let value = "value".to_string();
+    //             json_item.insert(key, value);
+    //         });
+    //         let json_item = from_str(&serde_json::to_string(&json_item).unwrap()).unwrap();
+    //         json_item
+    //     })
+    //     .collect();
+
+    // println!("JSON: {:?}", json_values);
+
+    let j: &str = r#"{
+            "name": "John Doe",
+            "age": 30,
+            "city": "New York"
+        }"#;
+    let ex: Value = serde_json::from_str(j).expect("msg");
+    let name: &str = ex["name"].as_str().unwrap();
+    println!("{:?}", name);
+
+    list_items_result.iter().for_each(|item| {
+        println!("ITEM IS {:?}", item);
+
+        let atv: AttributeValue = item.get("OwnId").unwrap().clone();
+        println!("{:?}", atv);
+        panic!("ffs");
+    });
+    println!("{:?}", list_items_result);
     return "ffs";
 }
