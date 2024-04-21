@@ -1,4 +1,5 @@
 use crate::dynamor;
+use colored::*;
 
 use dialoguer::{theme::ColorfulTheme, Input, Select};
 use tokio::runtime::Runtime;
@@ -17,7 +18,7 @@ pub fn show_menu() {
 
         match selection {
             0 => {
-                println!("Get Integration (FAKE)!");
+                println!("{}", "Get Integration (FAKE)!".green());
                 // let integration_id_hardcoded: &str = "I#01HV177W1JAS01D5J3EZDSKCC0";
                 // let result =
                 //     rt.block_on(async { dynamo::get_integration(integration_id_hardcoded).await });
@@ -41,7 +42,7 @@ pub fn show_menu() {
                     rt.block_on(async { dynamor::get_integration(integration_id.as_str()).await });
                 match result {
                     Ok(result) => {
-                        println!("Integration id {} is {}", integration_id, result);
+                        println!("Integration id {} is {}", integration_id, result.cyan());
                     }
                     Err(e) => {
                         println!("Error: {:?}", e);

@@ -13,20 +13,6 @@ use rusoto_core::Region;
 use rusoto_dynamodb::{AttributeValue, DynamoDb, DynamoDbClient, QueryInput};
 use std::collections::HashMap;
 
-fn setup_aws_client() -> DynamoDbClient {
-    let aws_region = env::var("AWS_REGION").unwrap_or_else(|_| "eu-west-1".to_string());
-    let region = match aws_region.as_str() {
-        "eu-west-1" => Region::EuWest1,
-        "us-east-1" => Region::UsEast1,
-        _ => {
-            eprintln!("Invalid region: {}", aws_region);
-            std::process::exit(1);
-        }
-    };
-
-    DynamoDbClient::new(region)
-}
-
 pub async fn get_integration(integration_id: &str) -> Result<String, ()> {
     let client = setup_aws_client();
     let mut query = HashMap::new();
@@ -248,4 +234,18 @@ pub async fn get_integration(integration_id: &str) -> Result<String, ()> {
     let serialized = serde_json::to_string_pretty(&integrations).unwrap();
 
     Ok(serialized)
+}
+
+fn setup_aws_client() -> DynamoDbClient {
+    let aws_region = env::var("AWS_REGION").unwrap_or_else(|_| "eu-west-1".to_string());
+    let region = match aws_region.as_str() {
+        "eu-west-1" => Region::EuWest1,
+        "us-east-1" => Region::UsEast1,
+        _ => {
+            eprintln!("Invalid region: {}", aws_region);
+            std::process::exit(1);
+        }
+    };
+
+    DynamoDbClient::new(region)
 }
