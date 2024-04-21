@@ -9,7 +9,6 @@ pub fn show_menu() {
 
     loop {
         let options = vec![
-            "Fake",
             "Get Integration by ID",
             "Get a MappedField",
             "Get all MappedFields for an Integration",
@@ -24,21 +23,7 @@ pub fn show_menu() {
 
         match selection {
             0 => {
-                println!("{}", "Get Integration (FAKE)!".green());
-                // let integration_id_hardcoded: &str = "I#01HV177W1JAS01D5J3EZDSKCC0";
-                // let result =
-                //     rt.block_on(async { dynamo::get_integration(integration_id_hardcoded).await });
-
-                // match result {
-                //     Ok(result) => {
-                //         println!("Result: {:?}", result);
-                //     }
-                //     Err(e) => {
-                //         println!("Error: {:?}", e);
-                //     }
-                // }
-            }
-            1 => {
+                // I#01HV177W1JAS01D5J3EZDSKCC0
                 println!("Get Integration!");
                 let integration_id: String = Input::with_theme(&ColorfulTheme::default())
                     .with_prompt("Integration ID:")
@@ -55,7 +40,7 @@ pub fn show_menu() {
                     }
                 }
             }
-            2 => {
+            1 => {
                 println!("Get a MappedField!");
                 let integration_id: String = Input::with_theme(&ColorfulTheme::default())
                     .with_prompt("Integration ID:")
@@ -78,7 +63,7 @@ pub fn show_menu() {
                     }
                 }
             }
-            3 => {
+            2 => {
                 println!("Get all MappedFields for an Integration!");
                 let integration_id: String = Input::with_theme(&ColorfulTheme::default())
                     .with_prompt("Integration ID:")
@@ -100,7 +85,7 @@ pub fn show_menu() {
                     }
                 }
             }
-            4 => {
+            3 => {
                 println!("Exiting...");
                 break;
             }
