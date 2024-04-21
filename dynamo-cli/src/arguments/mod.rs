@@ -6,10 +6,15 @@ use std::env;
 struct Args {
     #[arg(short, long)]
     profile: String,
+    #[arg(short, long)]
+    region: String,
+    // #[arg(short, long)]
+    // table: String,
 }
 
 pub fn parse_args() {
     let args = Args::parse();
     env::set_var("AWS_PROFILE", &args.profile);
-    println!("AWS_PROFILE: {}", args.profile);
+    env::set_var("AWS_REGION", &args.region);
+    // env::set_var("DYNAMODB_TABLE", &args.table);
 }
