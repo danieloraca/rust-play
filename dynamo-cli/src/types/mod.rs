@@ -117,3 +117,21 @@ pub struct SecondaryConfig {
     #[serde(rename = "format")]
     pub format: String,
 }
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct Module {
+    #[serde(rename = "PK")]
+    pub pk: String,
+    #[serde(rename = "SK")]
+    pub sk: String,
+    #[serde(rename = "CrAt")]
+    pub cr_at: String,
+    #[serde(rename = "ConCat")]
+    pub con_cat: String,
+    #[serde(rename = "Hdl")]
+    pub hdl: String,
+    #[serde(rename = "Lbl")]
+    pub lbl: String,
+    #[serde(rename = "MId")]
+    pub m_id: String,
+}

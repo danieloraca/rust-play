@@ -5,7 +5,7 @@ extern crate serde_dynamodb;
 use std::env;
 
 use crate::types::{
-    AuthDetail, AuthStatus, Integration, IntegrationStatus, MappedField, PrimaryConfig,
+    AuthDetail, AuthStatus, Integration, IntegrationStatus, MappedField, Module, PrimaryConfig,
     PrimaryConnection, SecondaryConfig, SecondaryConnection, SetupComplete,
 };
 
@@ -399,6 +399,110 @@ pub async fn get_all_mapped_fields_for_integration(integration_id: &str) -> Resu
                 sec_type: item.get("SecType").unwrap().s.as_ref().unwrap().to_string(),
             };
             mapped_field
+        })
+        .collect();
+
+    let serialized = serde_json::to_string_pretty(&items).unwrap();
+    Ok(serialized)
+}
+
+pub async fn get_module(integration_id: &str, module_id: &str) -> Result<String, ()> {
+    let client = setup_aws_client();
+    let mut query = HashMap::new();
+    let sk = format!("{}#{}", integration_id, module_id);
+
+    // I#01HV177W1JAS01D5J3EZDSKCC0
+    // M#01HV1780JP8JEFCTGZ63VZ6TDJ
+    query.insert(
+        String::from(":pk"),
+        AttributeValue {
+            s: Some(String::from(integration_id)),
+            ..Default::default()
+        },
+    );
+
+    query.insert(
+        String::from(":sk"),
+        AttributeValue {
+            s: Some(String::from(sk)),
+            ..Default::default()
+        },
+    );
+
+    let items: Vec<Module> = client
+        .query(QueryInput {
+            table_name: String::from("Stage-Integrations"),
+            key_condition_expression: Some(String::from("PK = :pk and SK = :sk")),
+            expression_attribute_values: Some(query),
+            ..Default::default()
+        })
+        .await
+        .unwrap()
+        .items
+        .unwrap()
+        .iter()
+        .map(|item| {
+            let module = Module {
+                pk: item.get("PK").unwrap().s.as_ref().unwrap().to_string(),
+                sk: item.get("SK").unwrap().s.as_ref().unwrap().to_string(),
+                cr_at: item.get("CrAt").unwrap().s.as_ref().unwrap().to_string(),
+                con_cat: item.get("ConCat").unwrap().s.as_ref().unwrap().to_string(),
+                hdl: item.get("Hdl").unwrap().s.as_ref().unwrap().to_string(),
+                lbl: item.get("Lbl").unwrap().s.as_ref().unwrap().to_string(),
+                m_id: item.get("MId").unwrap().s.as_ref().unwrap().to_string(),
+            };
+            module
+        })
+        .collect();
+
+    let serialized = serde_json::to_string_pretty(&items).unwrap();
+    Ok(serialized)
+}
+
+pub async fn get_all_modules_for_integration(integration_id: &str) -> Result<String, ()> {
+    let client = setup_aws_client();
+    let mut query = HashMap::new();
+    let sk = format!("{}#M", integration_id);
+
+    query.insert(
+        String::from(":pk"),
+        AttributeValue {
+            s: Some(String::from(integration_id)),
+            ..Default::default()
+        },
+    );
+
+    query.insert(
+        String::from(":sk"),
+        AttributeValue {
+            s: Some(String::from(sk)),
+            ..Default::default()
+        },
+    );
+
+    let items: Vec<Module> = client
+        .query(QueryInput {
+            table_name: String::from("Stage-Integrations"),
+            key_condition_expression: Some(String::from("PK = :pk and begins_with(SK, :sk)")),
+            expression_attribute_values: Some(query),
+            ..Default::default()
+        })
+        .await
+        .unwrap()
+        .items
+        .unwrap()
+        .iter()
+        .map(|item| {
+            let module = Module {
+                pk: item.get("PK").unwrap().s.as_ref().unwrap().to_string(),
+                sk: item.get("SK").unwrap().s.as_ref().unwrap().to_string(),
+                cr_at: item.get("CrAt").unwrap().s.as_ref().unwrap().to_string(),
+                con_cat: item.get("ConCat").unwrap().s.as_ref().unwrap().to_string(),
+                hdl: item.get("Hdl").unwrap().s.as_ref().unwrap().to_string(),
+                lbl: item.get("Lbl").unwrap().s.as_ref().unwrap().to_string(),
+                m_id: item.get("MId").unwrap().s.as_ref().unwrap().to_string(),
+            };
+            module
         })
         .collect();
 

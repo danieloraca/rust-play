@@ -12,6 +12,8 @@ pub fn show_menu() {
             "Get Integration by ID",
             "Get a MappedField",
             "Get all MappedFields for an Integration",
+            "Get a Module",
+            "Get all Modules for an Integration",
             "Exit",
         ];
         let selection = Select::with_theme(&ColorfulTheme::default())
@@ -86,6 +88,50 @@ pub fn show_menu() {
                 }
             }
             3 => {
+                println!("Get a Module!");
+                let integration_id: String = Input::with_theme(&ColorfulTheme::default())
+                    .with_prompt("Integration ID:")
+                    .interact()
+                    .unwrap();
+                let module_id: String = Input::with_theme(&ColorfulTheme::default())
+                    .with_prompt("Module ID:")
+                    .interact()
+                    .unwrap();
+                let result = rt.block_on(async {
+                    dynamor::get_module(integration_id.as_str(), module_id.as_str()).await
+                });
+                match result {
+                    Ok(result) => {
+                        println!("Module id {} is {}", module_id, result.cyan());
+                    }
+                    Err(e) => {
+                        println!("Error: {:?}", e);
+                    }
+                }
+            }
+            4 => {
+                println!("Get all Modules for an Integration!");
+                let integration_id: String = Input::with_theme(&ColorfulTheme::default())
+                    .with_prompt("Integration ID:")
+                    .interact()
+                    .unwrap();
+                let result = rt.block_on(async {
+                    dynamor::get_all_modules_for_integration(integration_id.as_str()).await
+                });
+                match result {
+                    Ok(result) => {
+                        println!(
+                            "Modules for integration id {} are {}",
+                            integration_id,
+                            result.cyan()
+                        );
+                    }
+                    Err(e) => {
+                        println!("Error: {:?}", e);
+                    }
+                }
+            }
+            5 => {
                 println!("Exiting...");
                 break;
             }
