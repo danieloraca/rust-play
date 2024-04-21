@@ -429,31 +429,69 @@ pub async fn get_module(integration_id: &str, module_id: &str) -> Result<String,
         },
     );
 
-    let items: Vec<Module> = client
+    let items_result = client
         .query(QueryInput {
             table_name: String::from("Stage-Integrations"),
             key_condition_expression: Some(String::from("PK = :pk and SK = :sk")),
             expression_attribute_values: Some(query),
             ..Default::default()
         })
-        .await
-        .unwrap()
-        .items
-        .unwrap()
-        .iter()
-        .map(|item| {
-            let module = Module {
-                pk: item.get("PK").unwrap().s.as_ref().unwrap().to_string(),
-                sk: item.get("SK").unwrap().s.as_ref().unwrap().to_string(),
-                cr_at: item.get("CrAt").unwrap().s.as_ref().unwrap().to_string(),
-                con_cat: item.get("ConCat").unwrap().s.as_ref().unwrap().to_string(),
-                hdl: item.get("Hdl").unwrap().s.as_ref().unwrap().to_string(),
-                lbl: item.get("Lbl").unwrap().s.as_ref().unwrap().to_string(),
-                m_id: item.get("MId").unwrap().s.as_ref().unwrap().to_string(),
-            };
-            module
-        })
-        .collect();
+        .await;
+
+    let items = match items_result {
+        Ok(result) => {
+            match result.items {
+                Some(items) => items
+                    .iter()
+                    .map(|item| {
+                        let module = Module {
+                            pk: item.get("PK").unwrap().s.as_ref().unwrap().to_string(),
+                            sk: item.get("SK").unwrap().s.as_ref().unwrap().to_string(),
+                            cr_at: item.get("CrAt").unwrap().s.as_ref().unwrap().to_string(),
+                            con_cat: item.get("ConCat").unwrap().s.as_ref().unwrap().to_string(),
+                            hdl: item.get("Hdl").unwrap().s.as_ref().unwrap().to_string(),
+                            lbl: item.get("Lbl").unwrap().s.as_ref().unwrap().to_string(),
+                            m_id: item.get("MId").unwrap().s.as_ref().unwrap().to_string(),
+                        };
+                        module
+                    })
+                    .collect::<Vec<Module>>(),
+                None => {
+                    Vec::new() // or handle this case as you see fit
+                }
+            }
+        }
+        Err(err) => {
+            eprintln!("Error: {}", err);
+            Vec::new() // or handle this error case as you see fit
+        }
+    };
+
+    // let items: Vec<Module> = client
+    //     .query(QueryInput {
+    //         table_name: String::from("Stage-Integrations"),
+    //         key_condition_expression: Some(String::from("PK = :pk and SK = :sk")),
+    //         expression_attribute_values: Some(query),
+    //         ..Default::default()
+    //     })
+    //     .await
+    //     .unwrap()
+    //     .items
+    //     .unwrap()
+    //     .iter()
+    //     .map(|item| {
+    //         let module = Module {
+    //             pk: item.get("PK").unwrap().s.as_ref().unwrap().to_string(),
+    //             sk: item.get("SK").unwrap().s.as_ref().unwrap().to_string(),
+    //             cr_at: item.get("CrAt").unwrap().s.as_ref().unwrap().to_string(),
+    //             con_cat: item.get("ConCat").unwrap().s.as_ref().unwrap().to_string(),
+    //             hdl: item.get("Hdl").unwrap().s.as_ref().unwrap().to_string(),
+    //             lbl: item.get("Lbl").unwrap().s.as_ref().unwrap().to_string(),
+    //             m_id: item.get("MId").unwrap().s.as_ref().unwrap().to_string(),
+    //         };
+    //         module
+    //     })
+    //     .collect();
 
     let serialized = serde_json::to_string_pretty(&items).unwrap();
     Ok(serialized)
