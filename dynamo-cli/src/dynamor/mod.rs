@@ -445,13 +445,34 @@ pub async fn get_module(integration_id: &str, module_id: &str) -> Result<String,
                     .iter()
                     .map(|item| {
                         let module = Module {
-                            pk: item.get("PK").unwrap().s.as_ref().unwrap().to_string(),
-                            sk: item.get("SK").unwrap().s.as_ref().unwrap().to_string(),
-                            cr_at: item.get("CrAt").unwrap().s.as_ref().unwrap().to_string(),
-                            con_cat: item.get("ConCat").unwrap().s.as_ref().unwrap().to_string(),
-                            hdl: item.get("Hdl").unwrap().s.as_ref().unwrap().to_string(),
-                            lbl: item.get("Lbl").unwrap().s.as_ref().unwrap().to_string(),
-                            m_id: item.get("MId").unwrap().s.as_ref().unwrap().to_string(),
+                            pk: item
+                                .get("PK")
+                                .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+                                .unwrap_or_default(),
+                            sk: item
+                                .get("SK")
+                                .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+                                .unwrap_or_default(),
+                            cr_at: item
+                                .get("CrAt")
+                                .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+                                .unwrap_or_default(),
+                            con_cat: item
+                                .get("ConCat")
+                                .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+                                .unwrap_or_default(),
+                            hdl: item
+                                .get("Hdl")
+                                .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+                                .unwrap_or_default(),
+                            lbl: item
+                                .get("Lbl")
+                                .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+                                .unwrap_or_default(),
+                            m_id: item
+                                .get("MId")
+                                .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+                                .unwrap_or_default(),
                         };
                         module
                     })
