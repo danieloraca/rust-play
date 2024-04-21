@@ -322,6 +322,90 @@ pub async fn get_mapped_field(integration_id: &str, mapped_field_id: &str) -> Re
     Ok(serialized)
 }
 
+pub async fn get_all_mapped_fields_for_integration(integration_id: &str) -> Result<String, ()> {
+    let client = setup_aws_client();
+    let mut query = HashMap::new();
+    let sk = format!("{}#F", integration_id);
+
+    query.insert(
+        String::from(":pk"),
+        AttributeValue {
+            s: Some(String::from(integration_id)),
+            ..Default::default()
+        },
+    );
+
+    query.insert(
+        String::from(":sk"),
+        AttributeValue {
+            s: Some(String::from(sk)),
+            ..Default::default()
+        },
+    );
+
+    let items: Vec<MappedField> = client
+        .query(QueryInput {
+            table_name: String::from("Stage-Integrations"),
+            key_condition_expression: Some(String::from("PK = :pk and begins_with(SK, :sk)")),
+            expression_attribute_values: Some(query),
+            ..Default::default()
+        })
+        .await
+        .unwrap()
+        .items
+        .unwrap()
+        .iter()
+        .map(|item| {
+            let mapped_field = MappedField {
+                pk: item.get("PK").unwrap().s.as_ref().unwrap().to_string(),
+                sk: item.get("SK").unwrap().s.as_ref().unwrap().to_string(),
+                cr_at: item.get("CrAt").unwrap().s.as_ref().unwrap().to_string(),
+                f_id: item.get("FId").unwrap().s.as_ref().unwrap().to_string(),
+                f_pri_id: item.get("FPriId").unwrap().s.as_ref().unwrap().to_string(),
+                f_sec_id: item.get("FSecId").unwrap().s.as_ref().unwrap().to_string(),
+                pri_cfg: PrimaryConfig {
+                    label: item
+                        .get("PriCfg")
+                        .unwrap()
+                        .m
+                        .as_ref()
+                        .unwrap()
+                        .get("label")
+                        .unwrap()
+                        .s
+                        .as_ref()
+                        .unwrap()
+                        .to_string(),
+                },
+                pri_lbl: item.get("PriLbl").unwrap().s.as_ref().unwrap().to_string(),
+                pri_mod: item.get("PriMod").unwrap().s.as_ref().unwrap().to_string(),
+                pri_type: item.get("PriType").unwrap().s.as_ref().unwrap().to_string(),
+                sec_cfg: SecondaryConfig {
+                    format: item
+                        .get("SecCfg")
+                        .unwrap()
+                        .m
+                        .as_ref()
+                        .unwrap()
+                        .get("format")
+                        .unwrap()
+                        .s
+                        .as_ref()
+                        .unwrap()
+                        .to_string(),
+                },
+                sec_lbl: item.get("SecLbl").unwrap().s.as_ref().unwrap().to_string(),
+                sec_mod: item.get("SecMod").unwrap().s.as_ref().unwrap().to_string(),
+                sec_type: item.get("SecType").unwrap().s.as_ref().unwrap().to_string(),
+            };
+            mapped_field
+        })
+        .collect();
+
+    let serialized = serde_json::to_string_pretty(&items).unwrap();
+    Ok(serialized)
+}
+
 fn setup_aws_client() -> DynamoDbClient {
     let aws_region = env::var("AWS_REGION").unwrap_or_else(|_| "eu-west-1".to_string());
     let region = match aws_region.as_str() {

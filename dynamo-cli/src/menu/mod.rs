@@ -8,7 +8,13 @@ pub fn show_menu() {
     let rt = Runtime::new().unwrap();
 
     loop {
-        let options = vec!["Fake", "Get Integration by ID", "Get a MappedField", "Exit"];
+        let options = vec![
+            "Fake",
+            "Get Integration by ID",
+            "Get a MappedField",
+            "Get all MappedFields for an Integration",
+            "Exit",
+        ];
         let selection = Select::with_theme(&ColorfulTheme::default())
             .with_prompt("Select an option:")
             .items(&options)
@@ -73,6 +79,28 @@ pub fn show_menu() {
                 }
             }
             3 => {
+                println!("Get all MappedFields for an Integration!");
+                let integration_id: String = Input::with_theme(&ColorfulTheme::default())
+                    .with_prompt("Integration ID:")
+                    .interact()
+                    .unwrap();
+                let result = rt.block_on(async {
+                    dynamor::get_all_mapped_fields_for_integration(integration_id.as_str()).await
+                });
+                match result {
+                    Ok(result) => {
+                        println!(
+                            "MappedFields for integration id {} are {}",
+                            integration_id,
+                            result.cyan()
+                        );
+                    }
+                    Err(e) => {
+                        println!("Error: {:?}", e);
+                    }
+                }
+            }
+            4 => {
                 println!("Exiting...");
                 break;
             }
