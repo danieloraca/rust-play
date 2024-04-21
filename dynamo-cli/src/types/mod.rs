@@ -73,3 +73,47 @@ pub struct AuthStatus {
 pub struct AuthDetail {
     pub code: String,
 }
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct MappedField {
+    #[serde(rename = "PK")]
+    pub pk: String,
+    #[serde(rename = "SK")]
+    pub sk: String,
+    #[serde(rename = "CrAt")]
+    pub cr_at: String,
+    #[serde(rename = "FId")]
+    pub f_id: String,
+    #[serde(rename = "FPriId")]
+    pub f_pri_id: String,
+    #[serde(rename = "FSecId")]
+    pub f_sec_id: String,
+    #[serde(rename = "PriCfg")]
+    pub pri_cfg: PrimaryConfig,
+    #[serde(rename = "PriLbl")]
+    pub pri_lbl: String,
+    #[serde(rename = "PriMod")]
+    pub pri_mod: String,
+    #[serde(rename = "PriType")]
+    pub pri_type: String,
+    #[serde(rename = "SecCfg")]
+    pub sec_cfg: SecondaryConfig,
+    #[serde(rename = "SecLbl")]
+    pub sec_lbl: String,
+    #[serde(rename = "SecMod")]
+    pub sec_mod: String,
+    #[serde(rename = "SecType")]
+    pub sec_type: String,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct PrimaryConfig {
+    #[serde(rename = "label")]
+    pub label: String,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct SecondaryConfig {
+    #[serde(rename = "format")]
+    pub format: String,
+}
