@@ -33,203 +33,203 @@ pub async fn get_integration(integration_id: &str) -> Result<String, ()> {
         },
     );
 
-    let integrations: Vec<Integration> = client
+    let integrations_result = client
         .query(QueryInput {
             table_name: String::from("Stage-Integrations"),
             key_condition_expression: Some(String::from("PK = :pk and SK = :sk")),
             expression_attribute_values: Some(query),
             ..Default::default()
         })
-        .await
-        .unwrap()
-        .items
-        .unwrap()
-        .iter()
-        .map(|item| {
-            let integration = Integration {
-                pk: item.get("PK").unwrap().s.as_ref().unwrap().to_string(),
-                sk: item.get("SK").unwrap().s.as_ref().unwrap().to_string(),
-                own_id: item.get("PK").unwrap().s.as_ref().unwrap().to_string(),
-                cr_at: item.get("CrAt").unwrap().s.as_ref().unwrap().to_string(),
-                up_at: item.get("UpAt").unwrap().s.as_ref().unwrap().to_string(),
-                pri_con: PrimaryConnection {
-                    connection_type: item
-                        .get("PriCon")
-                        .unwrap()
-                        .m
-                        .as_ref()
-                        .unwrap()
-                        .get("connectionType")
-                        .unwrap()
-                        .s
-                        .as_ref()
-                        .unwrap()
-                        .to_string(),
-                    connection_name: item
-                        .get("PriCon")
-                        .unwrap()
-                        .m
-                        .as_ref()
-                        .unwrap()
-                        .get("connectionName")
-                        .unwrap()
-                        .s
-                        .as_ref()
-                        .unwrap()
-                        .to_string(),
-                    account_id: item
-                        .get("PriCon")
-                        .unwrap()
-                        .m
-                        .as_ref()
-                        .unwrap()
-                        .get("accountId")
-                        .unwrap()
-                        .s
-                        .as_ref()
-                        .unwrap()
-                        .to_string(),
-                },
-                sec_con: SecondaryConnection {
-                    connection_name: item
-                        .get("SecCon")
-                        .unwrap()
-                        .m
-                        .as_ref()
-                        .unwrap()
-                        .get("connectionName")
-                        .unwrap()
-                        .s
-                        .as_ref()
-                        .unwrap()
-                        .to_string(),
-                    account_id: item
-                        .get("SecCon")
-                        .unwrap()
-                        .m
-                        .as_ref()
-                        .unwrap()
-                        .get("accountId")
-                        .unwrap()
-                        .s
-                        .as_ref()
-                        .unwrap()
-                        .to_string(),
-                    connection_type: item
-                        .get("SecCon")
-                        .unwrap()
-                        .m
-                        .as_ref()
-                        .unwrap()
-                        .get("connectionType")
-                        .unwrap()
-                        .s
-                        .as_ref()
-                        .unwrap()
-                        .to_string(),
-                    api_domain: item
-                        .get("SecCon")
-                        .unwrap()
-                        .m
-                        .as_ref()
-                        .unwrap()
-                        .get("api_domain")
-                        .unwrap()
-                        .s
-                        .as_ref()
-                        .unwrap()
-                        .to_string(),
-                },
-                pri_auth: item.get("PriAuth").unwrap().s.as_ref().unwrap().to_string(),
-                sec_auth: item.get("SecAuth").unwrap().s.as_ref().unwrap().to_string(),
-                i_status: IntegrationStatus {
-                    setup_complete: SetupComplete {
-                        primary: item
-                            .get("IStatus")
-                            .unwrap()
-                            .m
-                            .as_ref()
-                            .unwrap()
-                            .get("setupComplete")
-                            .unwrap()
-                            .m
-                            .as_ref()
-                            .unwrap()
-                            .get("primary")
-                            .unwrap()
-                            .bool
-                            .unwrap(),
-                        secondary: item
-                            .get("IStatus")
-                            .unwrap()
-                            .m
-                            .as_ref()
-                            .unwrap()
-                            .get("setupComplete")
-                            .unwrap()
-                            .m
-                            .as_ref()
-                            .unwrap()
-                            .get("secondary")
-                            .unwrap()
-                            .bool
-                            .unwrap(),
-                    },
-                    auth: AuthStatus {
-                        secondary: AuthDetail {
-                            code: item
-                                .get("IStatus")
-                                .unwrap()
-                                .m
-                                .as_ref()
-                                .unwrap()
-                                .get("auth")
-                                .unwrap()
-                                .m
-                                .as_ref()
-                                .unwrap()
-                                .get("secondary")
-                                .unwrap()
-                                .m
-                                .as_ref()
-                                .unwrap()
-                                .get("code")
-                                .unwrap()
-                                .s
-                                .as_ref()
-                                .unwrap()
-                                .to_string(),
-                        },
-                        primary: AuthDetail {
-                            code: item
-                                .get("IStatus")
-                                .unwrap()
-                                .m
-                                .as_ref()
-                                .unwrap()
-                                .get("auth")
-                                .unwrap()
-                                .m
-                                .as_ref()
-                                .unwrap()
-                                .get("primary")
-                                .unwrap()
-                                .m
-                                .as_ref()
-                                .unwrap()
-                                .get("code")
-                                .unwrap()
-                                .s
-                                .as_ref()
-                                .unwrap()
-                                .to_string(),
-                        },
-                    },
-                },
-            };
-            integration
-        })
-        .collect();
+        .await;
+
+    let integrations = match integrations_result {
+        Ok(result) => {
+            match result.items {
+                Some(items) => items
+                    .iter()
+                    .map(|item| {
+                        let pk = item
+                            .get("PK")
+                            .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+                            .unwrap_or_else(|| panic!("PK attribute not found"));
+
+                        let sk = item
+                            .get("SK")
+                            .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+                            .unwrap_or_else(|| panic!("SK attribute not found"));
+
+                        let own_id = item
+                            .get("PK")
+                            .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+                            .unwrap_or_else(|| panic!("OwnId attribute not found"));
+
+                        let cr_at = item
+                            .get("CrAt")
+                            .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+                            .unwrap_or_else(|| panic!("CrAt attribute not found"));
+
+                        let up_at = item
+                            .get("UpAt")
+                            .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+                            .unwrap_or_else(|| panic!("UpAt attribute not found"));
+
+                        let pri_con = PrimaryConnection {
+                            connection_type: item
+                                .get("PriCon")
+                                .and_then(|attr| attr.m.as_ref())
+                                .and_then(|m| m.get("connectionType"))
+                                .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+                                .unwrap_or_else(|| {
+                                    panic!("PriCon connectionType attribute not found")
+                                }),
+
+                            connection_name: item
+                                .get("PriCon")
+                                .and_then(|attr| attr.m.as_ref())
+                                .and_then(|m| m.get("connectionName"))
+                                .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+                                .unwrap_or_else(|| {
+                                    panic!("PriCon connectionName attribute not found")
+                                }),
+
+                            account_id: item
+                                .get("PriCon")
+                                .and_then(|attr| attr.m.as_ref())
+                                .and_then(|m| m.get("accountId"))
+                                .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+                                .unwrap_or_else(|| panic!("PriCon accountId attribute not found")),
+                        };
+
+                        let sec_con = SecondaryConnection {
+                            connection_name: item
+                                .get("SecCon")
+                                .and_then(|attr| attr.m.as_ref())
+                                .and_then(|m| m.get("connectionName"))
+                                .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+                                .unwrap_or_else(|| {
+                                    panic!("SecCon connectionName attribute not found")
+                                }),
+
+                            account_id: item
+                                .get("SecCon")
+                                .and_then(|attr| attr.m.as_ref())
+                                .and_then(|m| m.get("accountId"))
+                                .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+                                .unwrap_or_else(|| panic!("SecCon accountId attribute not found")),
+
+                            connection_type: item
+                                .get("SecCon")
+                                .and_then(|attr| attr.m.as_ref())
+                                .and_then(|m| m.get("connectionType"))
+                                .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+                                .unwrap_or_else(|| {
+                                    panic!("SecCon connectionType attribute not found")
+                                }),
+
+                            api_domain: item
+                                .get("SecCon")
+                                .and_then(|attr| attr.m.as_ref())
+                                .and_then(|m| m.get("api_domain"))
+                                .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+                                .unwrap_or_else(|| panic!("SecCon api_domain attribute not found")),
+                        };
+
+                        let pri_auth = item
+                            .get("PriAuth")
+                            .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+                            .unwrap_or_else(|| panic!("PriAuth attribute not found"));
+
+                        let sec_auth = item
+                            .get("SecAuth")
+                            .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+                            .unwrap_or_else(|| panic!("SecAuth attribute not found"));
+
+                        let i_status = IntegrationStatus {
+                            setup_complete: SetupComplete {
+                                primary: item
+                                    .get("IStatus")
+                                    .and_then(|attr| attr.m.as_ref())
+                                    .and_then(|m| m.get("setupComplete"))
+                                    .and_then(|attr| attr.m.as_ref())
+                                    .and_then(|m| m.get("primary"))
+                                    .and_then(|attr| attr.bool)
+                                    .unwrap_or_else(|| {
+                                        panic!("IStatus setupComplete primary attribute not found")
+                                    }),
+
+                                secondary: item
+                                    .get("IStatus")
+                                    .and_then(|attr| attr.m.as_ref())
+                                    .and_then(|m| m.get("setupComplete"))
+                                    .and_then(|attr| attr.m.as_ref())
+                                    .and_then(|m| m.get("secondary"))
+                                    .and_then(|attr| attr.bool)
+                                    .unwrap_or_else(|| {
+                                        panic!(
+                                            "IStatus setupComplete secondary attribute not found"
+                                        )
+                                    }),
+                            },
+                            auth: AuthStatus {
+                                primary: AuthDetail {
+                                    code: item
+                                        .get("IStatus")
+                                        .and_then(|attr| attr.m.as_ref())
+                                        .and_then(|m| m.get("auth"))
+                                        .and_then(|attr| attr.m.as_ref())
+                                        .and_then(|m| m.get("primary"))
+                                        .and_then(|attr| attr.m.as_ref())
+                                        .and_then(|m| m.get("code"))
+                                        .and_then(|attr| attr.s.as_ref())
+                                        .map(|s| s.to_string())
+                                        .unwrap_or_else(|| {
+                                            panic!("IStatus auth primary code attribute not found")
+                                        }),
+                                },
+                                secondary: AuthDetail {
+                                    code: item
+                                        .get("IStatus")
+                                        .and_then(|attr| attr.m.as_ref())
+                                        .and_then(|m| m.get("auth"))
+                                        .and_then(|attr| attr.m.as_ref())
+                                        .and_then(|m| m.get("secondary"))
+                                        .and_then(|attr| attr.m.as_ref())
+                                        .and_then(|m| m.get("code"))
+                                        .and_then(|attr| attr.s.as_ref())
+                                        .map(|s| s.to_string())
+                                        .unwrap_or_else(|| {
+                                            panic!(
+                                                "IStatus auth secondary code attribute not found"
+                                            )
+                                        }),
+                                },
+                            },
+                        };
+
+                        Integration {
+                            pk,
+                            sk,
+                            own_id,
+                            cr_at,
+                            up_at,
+                            pri_con,
+                            sec_con,
+                            pri_auth,
+                            sec_auth,
+                            i_status,
+                        }
+                    })
+                    .collect::<Vec<Integration>>(),
+                None => {
+                    Vec::new() // or handle this case as you see fit
+                }
+            }
+        }
+        Err(err) => {
+            eprintln!("Error: {}", err);
+            Vec::new() // or handle this error case as you see fit
+        }
+    };
 
     let serialized = serde_json::to_string_pretty(&integrations).unwrap();
 
@@ -259,64 +259,123 @@ pub async fn get_mapped_field(integration_id: &str, mapped_field_id: &str) -> Re
         },
     );
 
-    let items: Vec<MappedField> = client
+    let items_result = client
         .query(QueryInput {
             table_name: String::from("Stage-Integrations"),
             key_condition_expression: Some(String::from("PK = :pk and SK = :sk")),
             expression_attribute_values: Some(query),
             ..Default::default()
         })
-        .await
-        .unwrap()
-        .items
-        .unwrap()
-        .iter()
-        .map(|item| {
-            let mapped_field = MappedField {
-                pk: item.get("PK").unwrap().s.as_ref().unwrap().to_string(),
-                sk: item.get("SK").unwrap().s.as_ref().unwrap().to_string(),
-                cr_at: item.get("CrAt").unwrap().s.as_ref().unwrap().to_string(),
-                f_id: item.get("FId").unwrap().s.as_ref().unwrap().to_string(),
-                f_pri_id: item.get("FPriId").unwrap().s.as_ref().unwrap().to_string(),
-                f_sec_id: item.get("FSecId").unwrap().s.as_ref().unwrap().to_string(),
-                pri_cfg: PrimaryConfig {
-                    label: item
-                        .get("PriCfg")
-                        .unwrap()
-                        .m
-                        .as_ref()
-                        .unwrap()
-                        .get("label")
-                        .unwrap()
-                        .s
-                        .as_ref()
-                        .unwrap()
-                        .to_string(),
-                },
-                pri_lbl: item.get("PriLbl").unwrap().s.as_ref().unwrap().to_string(),
-                pri_mod: item.get("PriMod").unwrap().s.as_ref().unwrap().to_string(),
-                pri_type: item.get("PriType").unwrap().s.as_ref().unwrap().to_string(),
-                sec_cfg: SecondaryConfig {
-                    format: item
-                        .get("SecCfg")
-                        .unwrap()
-                        .m
-                        .as_ref()
-                        .unwrap()
-                        .get("format")
-                        .unwrap()
-                        .s
-                        .as_ref()
-                        .unwrap()
-                        .to_string(),
-                },
-                sec_lbl: item.get("SecLbl").unwrap().s.as_ref().unwrap().to_string(),
-                sec_mod: item.get("SecMod").unwrap().s.as_ref().unwrap().to_string(),
-                sec_type: item.get("SecType").unwrap().s.as_ref().unwrap().to_string(),
-            };
-            mapped_field
-        })
-        .collect();
+        .await;
+
+    let items = match items_result {
+        Ok(result) => {
+            match result.items {
+                Some(items) => items
+                    .iter()
+                    .map(|item| {
+                        let pk = item
+                            .get("PK")
+                            .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+                            .unwrap_or_else(|| panic!("PK attribute not found"));
+
+                        let sk = item
+                            .get("SK")
+                            .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+                            .unwrap_or_else(|| panic!("SK attribute not found"));
+
+                        let cr_at = item
+                            .get("CrAt")
+                            .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+                            .unwrap_or_else(|| panic!("CrAt attribute not found"));
+
+                        let f_id = item
+                            .get("FId")
+                            .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+                            .unwrap_or_else(|| panic!("FId attribute not found"));
+
+                        let f_pri_id = item
+                            .get("FPriId")
+                            .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+                            .unwrap_or_else(|| panic!("FPriId attribute not found"));
+
+                        let f_sec_id = item
+                            .get("FSecId")
+                            .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+                            .unwrap_or_else(|| panic!("FSecId attribute not found"));
+
+                        let pri_cfg = item
+                            .get("PriCfg")
+                            .and_then(|attr| attr.m.as_ref())
+                            .and_then(|m| m.get("label"))
+                            .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+                            .unwrap_or_else(|| panic!("PriCfg label attribute not found"));
+
+                        let pri_lbl = item
+                            .get("PriLbl")
+                            .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+                            .unwrap_or_else(|| panic!("PriLbl attribute not found"));
+
+                        let pri_mod = item
+                            .get("PriMod")
+                            .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+                            .unwrap_or_else(|| panic!("PriMod attribute not found"));
+
+                        let pri_type = item
+                            .get("PriType")
+                            .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+                            .unwrap_or_else(|| panic!("PriType attribute not found"));
+
+                        let sec_cfg = item
+                            .get("SecCfg")
+                            .and_then(|attr| attr.m.as_ref())
+                            .and_then(|m| m.get("format"))
+                            .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+                            .unwrap_or_else(|| panic!("SecCfg format attribute not found"));
+
+                        let sec_lbl = item
+                            .get("SecLbl")
+                            .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+                            .unwrap_or_else(|| panic!("SecLbl attribute not found"));
+
+                        let sec_mod = item
+                            .get("SecMod")
+                            .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+                            .unwrap_or_else(|| panic!("SecMod attribute not found"));
+
+                        let sec_type = item
+                            .get("SecType")
+                            .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+                            .unwrap_or_else(|| panic!("SecType attribute not found"));
+
+                        MappedField {
+                            pk,
+                            sk,
+                            cr_at,
+                            f_id,
+                            f_pri_id,
+                            f_sec_id,
+                            pri_cfg: PrimaryConfig { label: pri_cfg },
+                            pri_lbl,
+                            pri_mod,
+                            pri_type,
+                            sec_cfg: SecondaryConfig { format: sec_cfg },
+                            sec_lbl,
+                            sec_mod,
+                            sec_type,
+                        }
+                    })
+                    .collect::<Vec<MappedField>>(),
+                None => {
+                    Vec::new() // or handle this case as you see fit
+                }
+            }
+        }
+        Err(err) => {
+            eprintln!("Error: {}", err);
+            Vec::new() // or handle this error case as you see fit
+        }
+    };
 
     let serialized = serde_json::to_string_pretty(&items).unwrap();
     Ok(serialized)
@@ -343,64 +402,100 @@ pub async fn get_all_mapped_fields_for_integration(integration_id: &str) -> Resu
         },
     );
 
-    let items: Vec<MappedField> = client
+    let items_result = client
         .query(QueryInput {
             table_name: String::from("Stage-Integrations"),
             key_condition_expression: Some(String::from("PK = :pk and begins_with(SK, :sk)")),
             expression_attribute_values: Some(query),
             ..Default::default()
         })
-        .await
-        .unwrap()
-        .items
-        .unwrap()
-        .iter()
-        .map(|item| {
-            let mapped_field = MappedField {
-                pk: item.get("PK").unwrap().s.as_ref().unwrap().to_string(),
-                sk: item.get("SK").unwrap().s.as_ref().unwrap().to_string(),
-                cr_at: item.get("CrAt").unwrap().s.as_ref().unwrap().to_string(),
-                f_id: item.get("FId").unwrap().s.as_ref().unwrap().to_string(),
-                f_pri_id: item.get("FPriId").unwrap().s.as_ref().unwrap().to_string(),
-                f_sec_id: item.get("FSecId").unwrap().s.as_ref().unwrap().to_string(),
-                pri_cfg: PrimaryConfig {
-                    label: item
-                        .get("PriCfg")
-                        .unwrap()
-                        .m
-                        .as_ref()
-                        .unwrap()
-                        .get("label")
-                        .unwrap()
-                        .s
-                        .as_ref()
-                        .unwrap()
-                        .to_string(),
-                },
-                pri_lbl: item.get("PriLbl").unwrap().s.as_ref().unwrap().to_string(),
-                pri_mod: item.get("PriMod").unwrap().s.as_ref().unwrap().to_string(),
-                pri_type: item.get("PriType").unwrap().s.as_ref().unwrap().to_string(),
-                sec_cfg: SecondaryConfig {
-                    format: item
-                        .get("SecCfg")
-                        .unwrap()
-                        .m
-                        .as_ref()
-                        .unwrap()
-                        .get("format")
-                        .unwrap()
-                        .s
-                        .as_ref()
-                        .unwrap()
-                        .to_string(),
-                },
-                sec_lbl: item.get("SecLbl").unwrap().s.as_ref().unwrap().to_string(),
-                sec_mod: item.get("SecMod").unwrap().s.as_ref().unwrap().to_string(),
-                sec_type: item.get("SecType").unwrap().s.as_ref().unwrap().to_string(),
-            };
-            mapped_field
-        })
-        .collect();
+        .await;
+
+    let items = match items_result {
+        Ok(result) => {
+            match result.items {
+                Some(items) => items
+                    .iter()
+                    .map(|item| {
+                        let mapped_field = MappedField {
+                            pk: item
+                                .get("PK")
+                                .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+                                .unwrap_or_else(|| panic!("PK attribute not found")),
+                            sk: item
+                                .get("SK")
+                                .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+                                .unwrap_or_else(|| panic!("SK attribute not found")),
+                            cr_at: item
+                                .get("CrAt")
+                                .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+                                .unwrap_or_else(|| panic!("CrAt attribute not found")),
+                            f_id: item
+                                .get("FId")
+                                .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+                                .unwrap_or_else(|| panic!("FId attribute not found")),
+                            f_pri_id: item
+                                .get("FPriId")
+                                .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+                                .unwrap_or_else(|| panic!("FPriId attribute not found")),
+                            f_sec_id: item
+                                .get("FSecId")
+                                .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+                                .unwrap_or_else(|| panic!("FSecId attribute not found")),
+                            pri_cfg: PrimaryConfig {
+                                label: item
+                                    .get("PriCfg")
+                                    .and_then(|attr| attr.m.as_ref())
+                                    .and_then(|m| m.get("label"))
+                                    .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+                                    .unwrap_or_else(|| panic!("PriCfg label attribute not found")),
+                            },
+                            pri_lbl: item
+                                .get("PriLbl")
+                                .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+                                .unwrap_or_else(|| panic!("PriLbl attribute not found")),
+                            pri_mod: item
+                                .get("PriMod")
+                                .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+                                .unwrap_or_else(|| panic!("PriMod attribute not found")),
+                            pri_type: item
+                                .get("PriType")
+                                .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+                                .unwrap_or_else(|| panic!("PriType attribute not found")),
+                            sec_cfg: SecondaryConfig {
+                                format: item
+                                    .get("SecCfg")
+                                    .and_then(|attr| attr.m.as_ref())
+                                    .and_then(|m| m.get("format"))
+                                    .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+                                    .unwrap_or_else(|| panic!("SecCfg format attribute not found")),
+                            },
+                            sec_lbl: item
+                                .get("SecLbl")
+                                .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+                                .unwrap_or_else(|| panic!("SecLbl attribute not found")),
+                            sec_mod: item
+                                .get("SecMod")
+                                .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+                                .unwrap_or_else(|| panic!("SecMod attribute not found")),
+                            sec_type: item
+                                .get("SecType")
+                                .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+                                .unwrap_or_else(|| panic!("SecType attribute not found")),
+                        };
+                        mapped_field
+                    })
+                    .collect::<Vec<MappedField>>(),
+                None => {
+                    Vec::new() // or handle this case as you see fit
+                }
+            }
+        }
+        Err(err) => {
+            eprintln!("Error: {}", err);
+            Vec::new() // or handle this error case as you see fit
+        }
+    };
 
     let serialized = serde_json::to_string_pretty(&items).unwrap();
     Ok(serialized)
@@ -474,6 +569,8 @@ pub async fn get_module(integration_id: &str, module_id: &str) -> Result<String,
                                 .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
                                 .unwrap_or_default(),
                         };
+                        let module = module;
+                        let module = module;
                         module
                     })
                     .collect::<Vec<Module>>(),
@@ -487,32 +584,6 @@ pub async fn get_module(integration_id: &str, module_id: &str) -> Result<String,
             Vec::new() // or handle this error case as you see fit
         }
     };
-
-    // let items: Vec<Module> = client
-    //     .query(QueryInput {
-    //         table_name: String::from("Stage-Integrations"),
-    //         key_condition_expression: Some(String::from("PK = :pk and SK = :sk")),
-    //         expression_attribute_values: Some(query),
-    //         ..Default::default()
-    //     })
-    //     .await
-    //     .unwrap()
-    //     .items
-    //     .unwrap()
-    //     .iter()
-    //     .map(|item| {
-    //         let module = Module {
-    //             pk: item.get("PK").unwrap().s.as_ref().unwrap().to_string(),
-    //             sk: item.get("SK").unwrap().s.as_ref().unwrap().to_string(),
-    //             cr_at: item.get("CrAt").unwrap().s.as_ref().unwrap().to_string(),
-    //             con_cat: item.get("ConCat").unwrap().s.as_ref().unwrap().to_string(),
-    //             hdl: item.get("Hdl").unwrap().s.as_ref().unwrap().to_string(),
-    //             lbl: item.get("Lbl").unwrap().s.as_ref().unwrap().to_string(),
-    //             m_id: item.get("MId").unwrap().s.as_ref().unwrap().to_string(),
-    //         };
-    //         module
-    //     })
-    //     .collect();
 
     let serialized = serde_json::to_string_pretty(&items).unwrap();
     Ok(serialized)
