@@ -42,7 +42,7 @@ pub async fn get_integration(integration_id: &str) -> Result<String, ()> {
         })
         .await;
 
-    let integrations = match integrations_result {
+    let items = match integrations_result {
         Ok(result) => match result.items {
             Some(items) => items
                 .iter()
@@ -56,7 +56,7 @@ pub async fn get_integration(integration_id: &str) -> Result<String, ()> {
         }
     };
 
-    let serialized = serde_json::to_string_pretty(&integrations).unwrap();
+    let serialized = serde_json::to_string_pretty(&items).unwrap();
 
     Ok(serialized)
 }
