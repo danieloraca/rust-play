@@ -43,191 +43,175 @@ pub async fn get_integration(integration_id: &str) -> Result<String, ()> {
         .await;
 
     let integrations = match integrations_result {
-        Ok(result) => {
-            match result.items {
-                Some(items) => items
-                    .iter()
-                    .map(|item| {
-                        let pk = item
-                            .get("PK")
-                            .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
-                            .unwrap_or_else(|| panic!("PK attribute not found"));
+        Ok(result) => match result.items {
+            Some(items) => items
+                .iter()
+                .map(|item| {
+                    let pk = item
+                        .get("PK")
+                        .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+                        .unwrap_or_else(|| panic!("PK attribute not found"));
 
-                        let sk = item
-                            .get("SK")
-                            .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
-                            .unwrap_or_else(|| panic!("SK attribute not found"));
+                    let sk = item
+                        .get("SK")
+                        .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+                        .unwrap_or_else(|| panic!("SK attribute not found"));
 
-                        let own_id = item
-                            .get("PK")
-                            .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
-                            .unwrap_or_else(|| panic!("OwnId attribute not found"));
+                    let own_id = item
+                        .get("PK")
+                        .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+                        .unwrap_or_else(|| panic!("OwnId attribute not found"));
 
-                        let cr_at = item
-                            .get("CrAt")
-                            .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
-                            .unwrap_or_else(|| panic!("CrAt attribute not found"));
+                    let cr_at = item
+                        .get("CrAt")
+                        .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+                        .unwrap_or_else(|| panic!("CrAt attribute not found"));
 
-                        let up_at = item
-                            .get("UpAt")
-                            .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
-                            .unwrap_or_else(|| panic!("UpAt attribute not found"));
+                    let up_at = item
+                        .get("UpAt")
+                        .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+                        .unwrap_or_else(|| panic!("UpAt attribute not found"));
 
-                        let pri_con = PrimaryConnection {
-                            connection_type: item
-                                .get("PriCon")
+                    let pri_con = PrimaryConnection {
+                        connection_type: item
+                            .get("PriCon")
+                            .and_then(|attr| attr.m.as_ref())
+                            .and_then(|m| m.get("connectionType"))
+                            .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+                            .unwrap_or_else(|| panic!("PriCon connectionType attribute not found")),
+
+                        connection_name: item
+                            .get("PriCon")
+                            .and_then(|attr| attr.m.as_ref())
+                            .and_then(|m| m.get("connectionName"))
+                            .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+                            .unwrap_or_else(|| panic!("PriCon connectionName attribute not found")),
+
+                        account_id: item
+                            .get("PriCon")
+                            .and_then(|attr| attr.m.as_ref())
+                            .and_then(|m| m.get("accountId"))
+                            .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+                            .unwrap_or_else(|| panic!("PriCon accountId attribute not found")),
+                    };
+
+                    let sec_con = SecondaryConnection {
+                        connection_name: item
+                            .get("SecCon")
+                            .and_then(|attr| attr.m.as_ref())
+                            .and_then(|m| m.get("connectionName"))
+                            .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+                            .unwrap_or_else(|| panic!("SecCon connectionName attribute not found")),
+
+                        account_id: item
+                            .get("SecCon")
+                            .and_then(|attr| attr.m.as_ref())
+                            .and_then(|m| m.get("accountId"))
+                            .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+                            .unwrap_or_else(|| panic!("SecCon accountId attribute not found")),
+
+                        connection_type: item
+                            .get("SecCon")
+                            .and_then(|attr| attr.m.as_ref())
+                            .and_then(|m| m.get("connectionType"))
+                            .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+                            .unwrap_or_else(|| panic!("SecCon connectionType attribute not found")),
+
+                        api_domain: item
+                            .get("SecCon")
+                            .and_then(|attr| attr.m.as_ref())
+                            .and_then(|m| m.get("api_domain"))
+                            .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+                            .unwrap_or_else(|| panic!("SecCon api_domain attribute not found")),
+                    };
+
+                    let pri_auth = item
+                        .get("PriAuth")
+                        .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+                        .unwrap_or_else(|| panic!("PriAuth attribute not found"));
+
+                    let sec_auth = item
+                        .get("SecAuth")
+                        .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+                        .unwrap_or_else(|| panic!("SecAuth attribute not found"));
+
+                    let i_status = IntegrationStatus {
+                        setup_complete: SetupComplete {
+                            primary: item
+                                .get("IStatus")
                                 .and_then(|attr| attr.m.as_ref())
-                                .and_then(|m| m.get("connectionType"))
-                                .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+                                .and_then(|m| m.get("setupComplete"))
+                                .and_then(|attr| attr.m.as_ref())
+                                .and_then(|m| m.get("primary"))
+                                .and_then(|attr| attr.bool)
                                 .unwrap_or_else(|| {
-                                    panic!("PriCon connectionType attribute not found")
+                                    panic!("IStatus setupComplete primary attribute not found")
                                 }),
 
-                            connection_name: item
-                                .get("PriCon")
+                            secondary: item
+                                .get("IStatus")
                                 .and_then(|attr| attr.m.as_ref())
-                                .and_then(|m| m.get("connectionName"))
-                                .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+                                .and_then(|m| m.get("setupComplete"))
+                                .and_then(|attr| attr.m.as_ref())
+                                .and_then(|m| m.get("secondary"))
+                                .and_then(|attr| attr.bool)
                                 .unwrap_or_else(|| {
-                                    panic!("PriCon connectionName attribute not found")
+                                    panic!("IStatus setupComplete secondary attribute not found")
                                 }),
-
-                            account_id: item
-                                .get("PriCon")
-                                .and_then(|attr| attr.m.as_ref())
-                                .and_then(|m| m.get("accountId"))
-                                .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
-                                .unwrap_or_else(|| panic!("PriCon accountId attribute not found")),
-                        };
-
-                        let sec_con = SecondaryConnection {
-                            connection_name: item
-                                .get("SecCon")
-                                .and_then(|attr| attr.m.as_ref())
-                                .and_then(|m| m.get("connectionName"))
-                                .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
-                                .unwrap_or_else(|| {
-                                    panic!("SecCon connectionName attribute not found")
-                                }),
-
-                            account_id: item
-                                .get("SecCon")
-                                .and_then(|attr| attr.m.as_ref())
-                                .and_then(|m| m.get("accountId"))
-                                .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
-                                .unwrap_or_else(|| panic!("SecCon accountId attribute not found")),
-
-                            connection_type: item
-                                .get("SecCon")
-                                .and_then(|attr| attr.m.as_ref())
-                                .and_then(|m| m.get("connectionType"))
-                                .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
-                                .unwrap_or_else(|| {
-                                    panic!("SecCon connectionType attribute not found")
-                                }),
-
-                            api_domain: item
-                                .get("SecCon")
-                                .and_then(|attr| attr.m.as_ref())
-                                .and_then(|m| m.get("api_domain"))
-                                .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
-                                .unwrap_or_else(|| panic!("SecCon api_domain attribute not found")),
-                        };
-
-                        let pri_auth = item
-                            .get("PriAuth")
-                            .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
-                            .unwrap_or_else(|| panic!("PriAuth attribute not found"));
-
-                        let sec_auth = item
-                            .get("SecAuth")
-                            .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
-                            .unwrap_or_else(|| panic!("SecAuth attribute not found"));
-
-                        let i_status = IntegrationStatus {
-                            setup_complete: SetupComplete {
-                                primary: item
+                        },
+                        auth: AuthStatus {
+                            primary: AuthDetail {
+                                code: item
                                     .get("IStatus")
                                     .and_then(|attr| attr.m.as_ref())
-                                    .and_then(|m| m.get("setupComplete"))
+                                    .and_then(|m| m.get("auth"))
                                     .and_then(|attr| attr.m.as_ref())
                                     .and_then(|m| m.get("primary"))
-                                    .and_then(|attr| attr.bool)
+                                    .and_then(|attr| attr.m.as_ref())
+                                    .and_then(|m| m.get("code"))
+                                    .and_then(|attr| attr.s.as_ref())
+                                    .map(|s| s.to_string())
                                     .unwrap_or_else(|| {
-                                        panic!("IStatus setupComplete primary attribute not found")
+                                        panic!("IStatus auth primary code attribute not found")
                                     }),
-
-                                secondary: item
+                            },
+                            secondary: AuthDetail {
+                                code: item
                                     .get("IStatus")
                                     .and_then(|attr| attr.m.as_ref())
-                                    .and_then(|m| m.get("setupComplete"))
+                                    .and_then(|m| m.get("auth"))
                                     .and_then(|attr| attr.m.as_ref())
                                     .and_then(|m| m.get("secondary"))
-                                    .and_then(|attr| attr.bool)
+                                    .and_then(|attr| attr.m.as_ref())
+                                    .and_then(|m| m.get("code"))
+                                    .and_then(|attr| attr.s.as_ref())
+                                    .map(|s| s.to_string())
                                     .unwrap_or_else(|| {
-                                        panic!(
-                                            "IStatus setupComplete secondary attribute not found"
-                                        )
+                                        panic!("IStatus auth secondary code attribute not found")
                                     }),
                             },
-                            auth: AuthStatus {
-                                primary: AuthDetail {
-                                    code: item
-                                        .get("IStatus")
-                                        .and_then(|attr| attr.m.as_ref())
-                                        .and_then(|m| m.get("auth"))
-                                        .and_then(|attr| attr.m.as_ref())
-                                        .and_then(|m| m.get("primary"))
-                                        .and_then(|attr| attr.m.as_ref())
-                                        .and_then(|m| m.get("code"))
-                                        .and_then(|attr| attr.s.as_ref())
-                                        .map(|s| s.to_string())
-                                        .unwrap_or_else(|| {
-                                            panic!("IStatus auth primary code attribute not found")
-                                        }),
-                                },
-                                secondary: AuthDetail {
-                                    code: item
-                                        .get("IStatus")
-                                        .and_then(|attr| attr.m.as_ref())
-                                        .and_then(|m| m.get("auth"))
-                                        .and_then(|attr| attr.m.as_ref())
-                                        .and_then(|m| m.get("secondary"))
-                                        .and_then(|attr| attr.m.as_ref())
-                                        .and_then(|m| m.get("code"))
-                                        .and_then(|attr| attr.s.as_ref())
-                                        .map(|s| s.to_string())
-                                        .unwrap_or_else(|| {
-                                            panic!(
-                                                "IStatus auth secondary code attribute not found"
-                                            )
-                                        }),
-                                },
-                            },
-                        };
+                        },
+                    };
 
-                        Integration {
-                            pk,
-                            sk,
-                            own_id,
-                            cr_at,
-                            up_at,
-                            pri_con,
-                            sec_con,
-                            pri_auth,
-                            sec_auth,
-                            i_status,
-                        }
-                    })
-                    .collect::<Vec<Integration>>(),
-                None => {
-                    Vec::new() // or handle this case as you see fit
-                }
-            }
-        }
+                    Integration {
+                        pk,
+                        sk,
+                        own_id,
+                        cr_at,
+                        up_at,
+                        pri_con,
+                        sec_con,
+                        pri_auth,
+                        sec_auth,
+                        i_status,
+                    }
+                })
+                .collect::<Vec<Integration>>(),
+            None => Vec::new(),
+        },
         Err(err) => {
             eprintln!("Error: {}", err);
-            Vec::new() // or handle this error case as you see fit
+            Vec::new()
         }
     };
 
@@ -269,111 +253,107 @@ pub async fn get_mapped_field(integration_id: &str, mapped_field_id: &str) -> Re
         .await;
 
     let items = match items_result {
-        Ok(result) => {
-            match result.items {
-                Some(items) => items
-                    .iter()
-                    .map(|item| {
-                        let pk = item
-                            .get("PK")
-                            .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
-                            .unwrap_or_else(|| panic!("PK attribute not found"));
+        Ok(result) => match result.items {
+            Some(items) => items
+                .iter()
+                .map(|item| {
+                    let pk = item
+                        .get("PK")
+                        .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+                        .unwrap_or_else(|| panic!("PK attribute not found"));
 
-                        let sk = item
-                            .get("SK")
-                            .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
-                            .unwrap_or_else(|| panic!("SK attribute not found"));
+                    let sk = item
+                        .get("SK")
+                        .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+                        .unwrap_or_else(|| panic!("SK attribute not found"));
 
-                        let cr_at = item
-                            .get("CrAt")
-                            .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
-                            .unwrap_or_else(|| panic!("CrAt attribute not found"));
+                    let cr_at = item
+                        .get("CrAt")
+                        .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+                        .unwrap_or_else(|| panic!("CrAt attribute not found"));
 
-                        let f_id = item
-                            .get("FId")
-                            .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
-                            .unwrap_or_else(|| panic!("FId attribute not found"));
+                    let f_id = item
+                        .get("FId")
+                        .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+                        .unwrap_or_else(|| panic!("FId attribute not found"));
 
-                        let f_pri_id = item
-                            .get("FPriId")
-                            .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
-                            .unwrap_or_else(|| panic!("FPriId attribute not found"));
+                    let f_pri_id = item
+                        .get("FPriId")
+                        .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+                        .unwrap_or_else(|| panic!("FPriId attribute not found"));
 
-                        let f_sec_id = item
-                            .get("FSecId")
-                            .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
-                            .unwrap_or_else(|| panic!("FSecId attribute not found"));
+                    let f_sec_id = item
+                        .get("FSecId")
+                        .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+                        .unwrap_or_else(|| panic!("FSecId attribute not found"));
 
-                        let pri_cfg = item
-                            .get("PriCfg")
-                            .and_then(|attr| attr.m.as_ref())
-                            .and_then(|m| m.get("label"))
-                            .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
-                            .unwrap_or_else(|| panic!("PriCfg label attribute not found"));
+                    let pri_cfg = item
+                        .get("PriCfg")
+                        .and_then(|attr| attr.m.as_ref())
+                        .and_then(|m| m.get("label"))
+                        .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+                        .unwrap_or_else(|| panic!("PriCfg label attribute not found"));
 
-                        let pri_lbl = item
-                            .get("PriLbl")
-                            .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
-                            .unwrap_or_else(|| panic!("PriLbl attribute not found"));
+                    let pri_lbl = item
+                        .get("PriLbl")
+                        .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+                        .unwrap_or_else(|| panic!("PriLbl attribute not found"));
 
-                        let pri_mod = item
-                            .get("PriMod")
-                            .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
-                            .unwrap_or_else(|| panic!("PriMod attribute not found"));
+                    let pri_mod = item
+                        .get("PriMod")
+                        .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+                        .unwrap_or_else(|| panic!("PriMod attribute not found"));
 
-                        let pri_type = item
-                            .get("PriType")
-                            .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
-                            .unwrap_or_else(|| panic!("PriType attribute not found"));
+                    let pri_type = item
+                        .get("PriType")
+                        .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+                        .unwrap_or_else(|| panic!("PriType attribute not found"));
 
-                        let sec_cfg = item
-                            .get("SecCfg")
-                            .and_then(|attr| attr.m.as_ref())
-                            .and_then(|m| m.get("format"))
-                            .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
-                            .unwrap_or_else(|| panic!("SecCfg format attribute not found"));
+                    let sec_cfg = item
+                        .get("SecCfg")
+                        .and_then(|attr| attr.m.as_ref())
+                        .and_then(|m| m.get("format"))
+                        .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+                        .unwrap_or_else(|| panic!("SecCfg format attribute not found"));
 
-                        let sec_lbl = item
-                            .get("SecLbl")
-                            .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
-                            .unwrap_or_else(|| panic!("SecLbl attribute not found"));
+                    let sec_lbl = item
+                        .get("SecLbl")
+                        .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+                        .unwrap_or_else(|| panic!("SecLbl attribute not found"));
 
-                        let sec_mod = item
-                            .get("SecMod")
-                            .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
-                            .unwrap_or_else(|| panic!("SecMod attribute not found"));
+                    let sec_mod = item
+                        .get("SecMod")
+                        .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+                        .unwrap_or_else(|| panic!("SecMod attribute not found"));
 
-                        let sec_type = item
-                            .get("SecType")
-                            .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
-                            .unwrap_or_else(|| panic!("SecType attribute not found"));
+                    let sec_type = item
+                        .get("SecType")
+                        .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+                        .unwrap_or_else(|| panic!("SecType attribute not found"));
 
-                        MappedField {
-                            pk,
-                            sk,
-                            cr_at,
-                            f_id,
-                            f_pri_id,
-                            f_sec_id,
-                            pri_cfg: PrimaryConfig { label: pri_cfg },
-                            pri_lbl,
-                            pri_mod,
-                            pri_type,
-                            sec_cfg: SecondaryConfig { format: sec_cfg },
-                            sec_lbl,
-                            sec_mod,
-                            sec_type,
-                        }
-                    })
-                    .collect::<Vec<MappedField>>(),
-                None => {
-                    Vec::new() // or handle this case as you see fit
-                }
-            }
-        }
+                    MappedField {
+                        pk,
+                        sk,
+                        cr_at,
+                        f_id,
+                        f_pri_id,
+                        f_sec_id,
+                        pri_cfg: PrimaryConfig { label: pri_cfg },
+                        pri_lbl,
+                        pri_mod,
+                        pri_type,
+                        sec_cfg: SecondaryConfig { format: sec_cfg },
+                        sec_lbl,
+                        sec_mod,
+                        sec_type,
+                    }
+                })
+                .collect::<Vec<MappedField>>(),
+            None => Vec::new(),
+        },
         Err(err) => {
             eprintln!("Error: {}", err);
-            Vec::new() // or handle this error case as you see fit
+            Vec::new()
         }
     };
 
@@ -412,88 +392,84 @@ pub async fn get_all_mapped_fields_for_integration(integration_id: &str) -> Resu
         .await;
 
     let items = match items_result {
-        Ok(result) => {
-            match result.items {
-                Some(items) => items
-                    .iter()
-                    .map(|item| {
-                        let mapped_field = MappedField {
-                            pk: item
-                                .get("PK")
+        Ok(result) => match result.items {
+            Some(items) => items
+                .iter()
+                .map(|item| {
+                    let mapped_field = MappedField {
+                        pk: item
+                            .get("PK")
+                            .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+                            .unwrap_or_else(|| panic!("PK attribute not found")),
+                        sk: item
+                            .get("SK")
+                            .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+                            .unwrap_or_else(|| panic!("SK attribute not found")),
+                        cr_at: item
+                            .get("CrAt")
+                            .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+                            .unwrap_or_else(|| panic!("CrAt attribute not found")),
+                        f_id: item
+                            .get("FId")
+                            .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+                            .unwrap_or_else(|| panic!("FId attribute not found")),
+                        f_pri_id: item
+                            .get("FPriId")
+                            .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+                            .unwrap_or_else(|| panic!("FPriId attribute not found")),
+                        f_sec_id: item
+                            .get("FSecId")
+                            .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+                            .unwrap_or_else(|| panic!("FSecId attribute not found")),
+                        pri_cfg: PrimaryConfig {
+                            label: item
+                                .get("PriCfg")
+                                .and_then(|attr| attr.m.as_ref())
+                                .and_then(|m| m.get("label"))
                                 .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
-                                .unwrap_or_else(|| panic!("PK attribute not found")),
-                            sk: item
-                                .get("SK")
+                                .unwrap_or_else(|| panic!("PriCfg label attribute not found")),
+                        },
+                        pri_lbl: item
+                            .get("PriLbl")
+                            .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+                            .unwrap_or_else(|| panic!("PriLbl attribute not found")),
+                        pri_mod: item
+                            .get("PriMod")
+                            .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+                            .unwrap_or_else(|| panic!("PriMod attribute not found")),
+                        pri_type: item
+                            .get("PriType")
+                            .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+                            .unwrap_or_else(|| panic!("PriType attribute not found")),
+                        sec_cfg: SecondaryConfig {
+                            format: item
+                                .get("SecCfg")
+                                .and_then(|attr| attr.m.as_ref())
+                                .and_then(|m| m.get("format"))
                                 .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
-                                .unwrap_or_else(|| panic!("SK attribute not found")),
-                            cr_at: item
-                                .get("CrAt")
-                                .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
-                                .unwrap_or_else(|| panic!("CrAt attribute not found")),
-                            f_id: item
-                                .get("FId")
-                                .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
-                                .unwrap_or_else(|| panic!("FId attribute not found")),
-                            f_pri_id: item
-                                .get("FPriId")
-                                .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
-                                .unwrap_or_else(|| panic!("FPriId attribute not found")),
-                            f_sec_id: item
-                                .get("FSecId")
-                                .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
-                                .unwrap_or_else(|| panic!("FSecId attribute not found")),
-                            pri_cfg: PrimaryConfig {
-                                label: item
-                                    .get("PriCfg")
-                                    .and_then(|attr| attr.m.as_ref())
-                                    .and_then(|m| m.get("label"))
-                                    .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
-                                    .unwrap_or_else(|| panic!("PriCfg label attribute not found")),
-                            },
-                            pri_lbl: item
-                                .get("PriLbl")
-                                .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
-                                .unwrap_or_else(|| panic!("PriLbl attribute not found")),
-                            pri_mod: item
-                                .get("PriMod")
-                                .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
-                                .unwrap_or_else(|| panic!("PriMod attribute not found")),
-                            pri_type: item
-                                .get("PriType")
-                                .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
-                                .unwrap_or_else(|| panic!("PriType attribute not found")),
-                            sec_cfg: SecondaryConfig {
-                                format: item
-                                    .get("SecCfg")
-                                    .and_then(|attr| attr.m.as_ref())
-                                    .and_then(|m| m.get("format"))
-                                    .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
-                                    .unwrap_or_else(|| panic!("SecCfg format attribute not found")),
-                            },
-                            sec_lbl: item
-                                .get("SecLbl")
-                                .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
-                                .unwrap_or_else(|| panic!("SecLbl attribute not found")),
-                            sec_mod: item
-                                .get("SecMod")
-                                .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
-                                .unwrap_or_else(|| panic!("SecMod attribute not found")),
-                            sec_type: item
-                                .get("SecType")
-                                .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
-                                .unwrap_or_else(|| panic!("SecType attribute not found")),
-                        };
-                        mapped_field
-                    })
-                    .collect::<Vec<MappedField>>(),
-                None => {
-                    Vec::new() // or handle this case as you see fit
-                }
-            }
-        }
+                                .unwrap_or_else(|| panic!("SecCfg format attribute not found")),
+                        },
+                        sec_lbl: item
+                            .get("SecLbl")
+                            .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+                            .unwrap_or_else(|| panic!("SecLbl attribute not found")),
+                        sec_mod: item
+                            .get("SecMod")
+                            .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+                            .unwrap_or_else(|| panic!("SecMod attribute not found")),
+                        sec_type: item
+                            .get("SecType")
+                            .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+                            .unwrap_or_else(|| panic!("SecType attribute not found")),
+                    };
+                    mapped_field
+                })
+                .collect::<Vec<MappedField>>(),
+            None => Vec::new(),
+        },
         Err(err) => {
             eprintln!("Error: {}", err);
-            Vec::new() // or handle this error case as you see fit
+            Vec::new()
         }
     };
 
@@ -534,54 +510,50 @@ pub async fn get_module(integration_id: &str, module_id: &str) -> Result<String,
         .await;
 
     let items = match items_result {
-        Ok(result) => {
-            match result.items {
-                Some(items) => items
-                    .iter()
-                    .map(|item| {
-                        let module = Module {
-                            pk: item
-                                .get("PK")
-                                .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
-                                .unwrap_or_default(),
-                            sk: item
-                                .get("SK")
-                                .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
-                                .unwrap_or_default(),
-                            cr_at: item
-                                .get("CrAt")
-                                .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
-                                .unwrap_or_default(),
-                            con_cat: item
-                                .get("ConCat")
-                                .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
-                                .unwrap_or_default(),
-                            hdl: item
-                                .get("Hdl")
-                                .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
-                                .unwrap_or_default(),
-                            lbl: item
-                                .get("Lbl")
-                                .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
-                                .unwrap_or_default(),
-                            m_id: item
-                                .get("MId")
-                                .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
-                                .unwrap_or_default(),
-                        };
-                        let module = module;
-                        let module = module;
-                        module
-                    })
-                    .collect::<Vec<Module>>(),
-                None => {
-                    Vec::new() // or handle this case as you see fit
-                }
-            }
-        }
+        Ok(result) => match result.items {
+            Some(items) => items
+                .iter()
+                .map(|item| {
+                    let module = Module {
+                        pk: item
+                            .get("PK")
+                            .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+                            .unwrap_or_default(),
+                        sk: item
+                            .get("SK")
+                            .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+                            .unwrap_or_default(),
+                        cr_at: item
+                            .get("CrAt")
+                            .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+                            .unwrap_or_default(),
+                        con_cat: item
+                            .get("ConCat")
+                            .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+                            .unwrap_or_default(),
+                        hdl: item
+                            .get("Hdl")
+                            .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+                            .unwrap_or_default(),
+                        lbl: item
+                            .get("Lbl")
+                            .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+                            .unwrap_or_default(),
+                        m_id: item
+                            .get("MId")
+                            .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+                            .unwrap_or_default(),
+                    };
+                    let module = module;
+                    let module = module;
+                    module
+                })
+                .collect::<Vec<Module>>(),
+            None => Vec::new(),
+        },
         Err(err) => {
             eprintln!("Error: {}", err);
-            Vec::new() // or handle this error case as you see fit
+            Vec::new()
         }
     };
 
