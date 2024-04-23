@@ -21,6 +21,7 @@ pub fn show_menu() {
             "Get all Syncs for a Primary Entity",
             "Get all Syncs for a Secondary Entity",
             "Get all Logs for a Sync",
+            "Get all Logs for an Integration",
             "Exit",
         ];
         let selection = Select::with_theme(&ColorfulTheme::default())
@@ -284,6 +285,29 @@ pub fn show_menu() {
                 }
             }
             12 => {
+                println!("Get all Logs for an Integration!");
+                let integration_id: String = Input::with_theme(&ColorfulTheme::default())
+                    .with_prompt("Integration ID:")
+                    .interact()
+                    .unwrap();
+
+                let result = rt.block_on(async {
+                    dynamor::get_all_logs_for_integration(integration_id.as_str()).await
+                });
+                match result {
+                    Ok(result) => {
+                        println!(
+                            "Logs for integration id {} are {}",
+                            integration_id,
+                            result.cyan()
+                        );
+                    }
+                    Err(e) => {
+                        println!("Error: {:?}", e);
+                    }
+                }
+            }
+            13 => {
                 println!("Exiting...");
                 break;
             }
