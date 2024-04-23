@@ -55,6 +55,11 @@ pub fn process_sync_item(item: &HashMap<String, AttributeValue>) -> Sync {
         .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
         .unwrap_or_else(|| panic!("SStatus attribute not found"));
 
+    let up_at = item
+        .get("UpAt")
+        .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+        .unwrap_or_else(|| panic!("UpAt attribute not found"));
+
     let s_result = SResult {
         data: item
             .get("SResult")
@@ -98,5 +103,6 @@ pub fn process_sync_item(item: &HashMap<String, AttributeValue>) -> Sync {
         s_sec_mod,
         s_status,
         s_result,
+        up_at,
     }
 }

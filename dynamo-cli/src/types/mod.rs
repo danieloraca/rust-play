@@ -160,6 +160,8 @@ pub struct Sync {
     pub s_status: String,
     #[serde(rename = "SResult")]
     pub s_result: SResult,
+    #[serde(rename = "UpAt")]
+    pub up_at: String,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -176,4 +178,10 @@ pub struct SResult {
 pub struct SyncResultData {
     #[serde(rename = "data")]
     pub data: String,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct SyncError {
+    #[serde(rename = "error")]
+    pub error: String,
 }
