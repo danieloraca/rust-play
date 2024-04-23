@@ -409,11 +409,9 @@ pub async fn get_integration_with_mapped_fields_and_modules(
     Ok(serialized)
 }
 
-pub async fn get_sync(sync_id: &str) -> Result<String, ()> {
+pub async fn get_sync_by_id(sync_id: &str) -> Result<Option<Vec<Sync>>, ()> {
     let client = setup_aws_client();
     let mut query = HashMap::new();
-
-    // S#01HA53XB214VS6RCEPKV0489QM
 
     query.insert(
         String::from(":pk"),
@@ -446,7 +444,18 @@ pub async fn get_sync(sync_id: &str) -> Result<String, ()> {
         }
     };
 
-    let serialized = serde_json::to_string_pretty(&items).unwrap();
+    if items.is_empty() {
+        return Ok(None);
+    } else {
+        return Ok(Some(items));
+    }
+}
+
+pub async fn get_sync(sync_id: &str) -> Result<String, ()> {
+    let sync = get_sync_by_id(sync_id).await.unwrap();
+
+    let serialized = serde_json::to_string_pretty(&sync).unwrap();
+
     Ok(serialized)
 }
 
