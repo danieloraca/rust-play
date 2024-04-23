@@ -17,7 +17,7 @@ pub fn process_integration_item(item: &HashMap<String, AttributeValue>) -> Integ
         .unwrap_or_else(|| panic!("SK attribute not found"));
 
     let own_id = item
-        .get("PK")
+        .get("OwnId")
         .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
         .unwrap_or_else(|| panic!("OwnId attribute not found"));
 
