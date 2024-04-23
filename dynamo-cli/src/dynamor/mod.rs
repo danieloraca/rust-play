@@ -71,6 +71,80 @@ pub async fn get_integration(integration_id: &str) -> Result<String, ()> {
     Ok(serialized)
 }
 
+pub async fn get_all_integrations_for_owner(owner_id: &str) -> Result<String, ()> {
+    // 02f6b978-f97f-4d98-bfda-cd10214f0e55
+    let client = setup_aws_client();
+    let mut query = HashMap::new();
+
+    query.insert(
+        String::from(":own_id"),
+        AttributeValue {
+            s: Some(String::from(owner_id)),
+            ..Default::default()
+        },
+    );
+
+    let integrations_result = client
+        .query(QueryInput {
+            table_name: String::from("Stage-Integrations"),
+            index_name: Some(String::from("OwnId")),
+            key_condition_expression: Some(String::from("OwnId = :own_id")),
+            expression_attribute_values: Some(query),
+            ..Default::default()
+        })
+        .await;
+
+    let items = match integrations_result {
+        Ok(result) => {
+            let integration_ids: Vec<String> = result
+                .items
+                .unwrap_or_else(|| Vec::new())
+                .iter()
+                .map(|item| item.get("PK").and_then(|attr| attr.s.clone()))
+                .flatten()
+                .collect();
+
+            let mut all_integrations = Vec::new();
+
+            for integration_id in integration_ids {
+                println!("Integration ID: {}", integration_id);
+                // Call get_integration function for each integration ID
+                let integration_result = get_integration(&integration_id).await;
+                match integration_result {
+                    Ok(integration_json) => {
+                        // Deserialize the integration JSON and add it to the list
+                        if let Ok(integration) =
+                            serde_json::from_str::<Integration>(&integration_json)
+                        {
+                            all_integrations.push(integration);
+                        } else {
+                            eprintln!(
+                                "Error deserializing integration JSON for ID: {}",
+                                integration_id
+                            );
+                        }
+                    }
+                    Err(_err) => {
+                        println!("BAH")
+                    }
+                }
+            }
+
+            // Serialize the list of integrations to JSON
+            let serialized = serde_json::to_string_pretty(&all_integrations).unwrap();
+            Ok(serialized)
+        }
+        Err(err) => {
+            eprintln!("Error: {}", err);
+            Err(())
+        }
+    };
+
+    let serialized = serde_json::to_string_pretty(&items).unwrap();
+
+    Ok(serialized)
+}
+
 pub async fn get_mapped_field(integration_id: &str, mapped_field_id: &str) -> Result<String, ()> {
     let client = setup_aws_client();
     let mut query = HashMap::new();

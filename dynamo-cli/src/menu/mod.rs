@@ -17,6 +17,7 @@ pub fn show_menu() {
             "Get an Integration with all its MappedFields and Modules",
             "Get a Sync",
             "Get a Log",
+            "Get all Integrations for an Owner",
             "Exit",
         ];
         let selection = Select::with_theme(&ColorfulTheme::default())
@@ -192,6 +193,29 @@ pub fn show_menu() {
                 }
             }
             8 => {
+                println!("Get all Integrations for an Owner!");
+                let owner_id: String = Input::with_theme(&ColorfulTheme::default())
+                    .with_prompt("Owner ID:")
+                    .interact()
+                    .unwrap();
+
+                let result = rt.block_on(async {
+                    dynamor::get_all_integrations_for_owner(owner_id.as_str()).await
+                });
+                match result {
+                    Ok(result) => {
+                        println!(
+                            "Integrations for owner id {} are {}",
+                            owner_id,
+                            result.cyan()
+                        );
+                    }
+                    Err(e) => {
+                        println!("Error: {:?}", e);
+                    }
+                }
+            }
+            9 => {
                 println!("Exiting...");
                 break;
             }
