@@ -16,6 +16,7 @@ pub fn show_menu() {
             "Get all Modules for an Integration",
             "Get an Integration with all its MappedFields and Modules",
             "Get a Sync",
+            "Get a Log",
             "Exit",
         ];
         let selection = Select::with_theme(&ColorfulTheme::default())
@@ -174,6 +175,23 @@ pub fn show_menu() {
                 }
             }
             7 => {
+                println!("Get a Log!");
+                let log_id: String = Input::with_theme(&ColorfulTheme::default())
+                    .with_prompt("Log ID:")
+                    .interact()
+                    .unwrap();
+
+                let result = rt.block_on(async { dynamor::get_log(log_id.as_str()).await });
+                match result {
+                    Ok(result) => {
+                        println!("Log id {} is {}", log_id, result.cyan());
+                    }
+                    Err(e) => {
+                        println!("Error: {:?}", e);
+                    }
+                }
+            }
+            8 => {
                 println!("Exiting...");
                 break;
             }

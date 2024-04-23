@@ -3,9 +3,11 @@ extern crate rusoto_dynamodb;
 extern crate serde;
 extern crate serde_dynamodb;
 use crate::transformers::integrations;
+use crate::transformers::logs;
 use crate::transformers::mapped_fields;
 use crate::transformers::modules;
 use crate::transformers::syncs;
+use crate::types::Log;
 use crate::types::Sync;
 use crate::types::{Integration, MappedField, Module};
 use rusoto_core::Region;
@@ -373,6 +375,47 @@ pub async fn get_sync(sync_id: &str) -> Result<String, ()> {
                 .iter()
                 .map(|item| syncs::process_sync_item(item))
                 .collect::<Vec<Sync>>(),
+            None => Vec::new(),
+        },
+        Err(err) => {
+            eprintln!("Error: {}", err);
+            Vec::new()
+        }
+    };
+
+    let serialized = serde_json::to_string_pretty(&items).unwrap();
+    Ok(serialized)
+}
+
+pub async fn get_log(log_id: &str) -> Result<String, ()> {
+    let client = setup_aws_client();
+    let mut query = HashMap::new();
+
+    // L#01HSV10JG7R4DRW2RFCCHTFVHP
+
+    query.insert(
+        String::from(":pk"),
+        AttributeValue {
+            s: Some(String::from(log_id)),
+            ..Default::default()
+        },
+    );
+
+    let items_result = client
+        .query(QueryInput {
+            table_name: String::from("Stage-Integrations"),
+            key_condition_expression: Some(String::from("PK = :pk")),
+            expression_attribute_values: Some(query),
+            ..Default::default()
+        })
+        .await;
+
+    let items = match items_result {
+        Ok(result) => match result.items {
+            Some(items) => items
+                .iter()
+                .map(|item| logs::process_log_item(item))
+                .collect::<Vec<Log>>(),
             None => Vec::new(),
         },
         Err(err) => {

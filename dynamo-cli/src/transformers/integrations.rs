@@ -81,7 +81,7 @@ pub fn process_integration_item(item: &HashMap<String, AttributeValue>) -> Integ
             .and_then(|attr| attr.m.as_ref())
             .and_then(|m| m.get("api_domain"))
             .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
-            .unwrap_or_else(|| panic!("SecCon api_domain attribute not found")),
+            .unwrap_or_else(|| String::new()),
     };
 
     let pri_auth = item

@@ -185,3 +185,27 @@ pub struct SyncError {
     #[serde(rename = "error")]
     pub sync_error: String,
 }
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct Log {
+    #[serde(rename = "PK")]
+    pub pk: String,
+    #[serde(rename = "SK")]
+    pub sk: String,
+    #[serde(rename = "ConCat")]
+    pub con_cat: String,
+    #[serde(rename = "DatTim")]
+    pub dat_tim: String,
+    #[serde(rename = "IId")]
+    pub i_id: String,
+    #[serde(rename = "LId")]
+    pub l_id: String,
+    #[serde(rename = "LSId")]
+    pub l_s_id: String,
+    #[serde(rename = "Req")]
+    pub req: String,
+    #[serde(rename = "Res")]
+    pub res: String,
+    #[serde(rename = "TTL")]
+    pub ttl: String,
+}
