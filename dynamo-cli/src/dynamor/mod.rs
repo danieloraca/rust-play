@@ -500,6 +500,48 @@ pub async fn get_log(log_id: &str) -> Result<String, ()> {
     Ok(serialized)
 }
 
+pub async fn get_all_logs_for_sync(sync_id: &str) -> Result<String, ()> {
+    let client = setup_aws_client();
+    let mut query = HashMap::new();
+
+    // I#01HTQ6P9MFK3V2FSD20Z1SF3VA#S#01HW2J2DS020GRYDZE4QX2Z2HN
+
+    query.insert(
+        String::from(":sk"),
+        AttributeValue {
+            s: Some(String::from(sync_id)),
+            ..Default::default()
+        },
+    );
+
+    let items_result = client
+        .query(QueryInput {
+            table_name: String::from("Stage-Integrations"),
+            index_name: Some(String::from("SK-LId")),
+            key_condition_expression: Some(String::from("SK = :sk")),
+            expression_attribute_values: Some(query),
+            ..Default::default()
+        })
+        .await;
+
+    let items = match items_result {
+        Ok(result) => match result.items {
+            Some(items) => items
+                .iter()
+                .map(|item| logs::process_log_item(item))
+                .collect::<Vec<Log>>(),
+            None => Vec::new(),
+        },
+        Err(err) => {
+            eprintln!("Error: {}", err);
+            Vec::new()
+        }
+    };
+
+    let serialized = serde_json::to_string_pretty(&items).unwrap();
+    Ok(serialized)
+}
+
 pub async fn get_all_syncs_for_primary_entity(primary_entity: &str) -> Result<String, ()> {
     // GeckoChat:01e4a092-ecbc-4b93-8228-2fbb1c686083:contact:28fd075b-a7ec-4344-b1f6-b077aaaa2eb0
     let client = setup_aws_client();
