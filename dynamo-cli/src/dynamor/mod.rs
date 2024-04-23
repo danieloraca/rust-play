@@ -541,6 +541,47 @@ pub async fn get_all_syncs_for_primary_entity(primary_entity: &str) -> Result<St
     Ok(serialized)
 }
 
+pub async fn get_all_syncs_for_secondary_entity(secondary_entity: &str) -> Result<String, ()> {
+    //
+    let client = setup_aws_client();
+    let mut query = HashMap::new();
+
+    query.insert(
+        String::from(":ssecid"),
+        AttributeValue {
+            s: Some(String::from(secondary_entity)),
+            ..Default::default()
+        },
+    );
+
+    let items_result = client
+        .query(QueryInput {
+            table_name: String::from("Stage-Integrations"),
+            index_name: Some(String::from("SSecId-IId")),
+            key_condition_expression: Some(String::from("SSecId = :ssecid")),
+            expression_attribute_values: Some(query),
+            ..Default::default()
+        })
+        .await;
+
+    let items = match items_result {
+        Ok(result) => match result.items {
+            Some(items) => items
+                .iter()
+                .map(|item| syncs::process_sync_item(item))
+                .collect::<Vec<Sync>>(),
+            None => Vec::new(),
+        },
+        Err(err) => {
+            eprintln!("Error: {}", err);
+            Vec::new()
+        }
+    };
+
+    let serialized = serde_json::to_string_pretty(&items).unwrap();
+    Ok(serialized)
+}
+
 fn setup_aws_client() -> DynamoDbClient {
     let aws_region = env::var("AWS_REGION").unwrap_or_else(|_| "eu-west-1".to_string());
     let region = match aws_region.as_str() {

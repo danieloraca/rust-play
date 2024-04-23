@@ -19,6 +19,7 @@ pub fn show_menu() {
             "Get a Log",
             "Get all Integrations for an Owner",
             "Get all Syncs for a Primary Entity",
+            "Get all Syncs for a Secondary Entity",
             "Exit",
         ];
         let selection = Select::with_theme(&ColorfulTheme::default())
@@ -229,7 +230,7 @@ pub fn show_menu() {
                 match result {
                     Ok(result) => {
                         println!(
-                            "Syncs for integration id {} are {}",
+                            "Syncs for primary entity {} are {}",
                             primary_entity,
                             result.cyan()
                         );
@@ -240,6 +241,29 @@ pub fn show_menu() {
                 }
             }
             10 => {
+                println!("Get all Syncs for a Secondary Entity!");
+                let secondary_entity: String = Input::with_theme(&ColorfulTheme::default())
+                    .with_prompt("SSecId:")
+                    .interact()
+                    .unwrap();
+
+                let result = rt.block_on(async {
+                    dynamor::get_all_syncs_for_secondary_entity(secondary_entity.as_str()).await
+                });
+                match result {
+                    Ok(result) => {
+                        println!(
+                            "Syncs for secondary entity {} are {}",
+                            secondary_entity,
+                            result.cyan()
+                        );
+                    }
+                    Err(e) => {
+                        println!("Error: {:?}", e);
+                    }
+                }
+            }
+            11 => {
                 println!("Exiting...");
                 break;
             }
