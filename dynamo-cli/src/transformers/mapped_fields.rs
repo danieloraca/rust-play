@@ -21,7 +21,7 @@ pub fn process_mapped_field_item(item: &HashMap<String, AttributeValue>) -> Mapp
     let f_id = item
         .get("FId")
         .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
-        .unwrap_or_else(|| panic!("FId attribute not found"));
+        .unwrap_or_else(|| String::from("FId attribute not found"));
 
     let f_pri_id = item
         .get("FPriId")
@@ -31,51 +31,51 @@ pub fn process_mapped_field_item(item: &HashMap<String, AttributeValue>) -> Mapp
     let f_sec_id = item
         .get("FSecId")
         .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
-        .unwrap_or_else(|| panic!("FSecId attribute not found"));
+        .unwrap_or_else(|| String::from("FSecId attribute not found"));
 
     let pri_cfg = item
         .get("PriCfg")
         .and_then(|attr| attr.m.as_ref())
         .and_then(|m| m.get("label"))
         .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
-        .unwrap_or_else(|| panic!("PriCfg label attribute not found"));
+        .unwrap_or_else(|| String::from("PriCfg label attribute not found"));
 
     let pri_lbl = item
         .get("PriLbl")
         .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
-        .unwrap_or_else(|| panic!("PriLbl attribute not found"));
+        .unwrap_or_else(|| String::from("PriLbl attribute not found"));
 
     let pri_mod = item
         .get("PriMod")
         .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
-        .unwrap_or_else(|| panic!("PriMod attribute not found"));
+        .unwrap_or_else(|| String::from("PriMod attribute not found"));
 
     let pri_type = item
         .get("PriType")
         .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
-        .unwrap_or_else(|| panic!("PriType attribute not found"));
+        .unwrap_or_else(|| String::from("PriType attribute not found"));
 
     let sec_cfg = item
         .get("SecCfg")
         .and_then(|attr| attr.m.as_ref())
         .and_then(|m| m.get("format"))
         .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
-        .unwrap_or_else(|| panic!("SecCfg format attribute not found"));
+        .unwrap_or_else(|| String::from("SecCfg format attribute not found"));
 
     let sec_lbl = item
         .get("SecLbl")
         .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
-        .unwrap_or_else(|| panic!("SecLbl attribute not found"));
+        .unwrap_or_else(|| String::from("SecLbl attribute not found"));
 
     let sec_mod = item
         .get("SecMod")
         .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
-        .unwrap_or_else(|| panic!("SecMod attribute not found"));
+        .unwrap_or_else(|| String::from("SecMod attribute not found"));
 
     let sec_type = item
         .get("SecType")
         .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
-        .unwrap_or_else(|| panic!("SecType attribute not found"));
+        .unwrap_or_else(|| String::from("SecType attribute not found"));
 
     MappedField {
         pk,

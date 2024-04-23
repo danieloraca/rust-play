@@ -561,6 +561,7 @@ pub async fn get_all_logs_for_integration(integration_id: &str) -> Result<String
             table_name: String::from("Stage-Integrations"),
             index_name: Some(String::from("SK-LId")),
             key_condition_expression: Some(String::from("SK = :sk")),
+            expression_attribute_values: Some(query),
             ..Default::default()
         })
         .await;

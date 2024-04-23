@@ -4,7 +4,7 @@ mod menu;
 mod transformers;
 mod types;
 
-fn main() {
+fn main() -> () {
     arguments::parse_args();
     menu::show_menu();
 }

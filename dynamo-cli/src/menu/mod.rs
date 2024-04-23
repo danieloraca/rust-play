@@ -4,7 +4,7 @@ use colored::*;
 use dialoguer::{theme::ColorfulTheme, Input, Select};
 use tokio::runtime::Runtime;
 
-pub fn show_menu() {
+pub fn show_menu() -> () {
     let rt = Runtime::new().unwrap();
 
     loop {
@@ -272,9 +272,8 @@ pub fn show_menu() {
                     .interact()
                     .unwrap();
 
-                let result = rt.block_on(async {
-                    dynamor::get_all_logs_for_sync(sync_id.as_str()).await
-                });
+                let result =
+                    rt.block_on(async { dynamor::get_all_logs_for_sync(sync_id.as_str()).await });
                 match result {
                     Ok(result) => {
                         println!("Logs for sync id {} are {}", sync_id, result.cyan());
