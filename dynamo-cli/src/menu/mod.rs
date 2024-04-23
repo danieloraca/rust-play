@@ -15,6 +15,7 @@ pub fn show_menu() {
             "Get a Module",
             "Get all Modules for an Integration",
             "Get an Integration with all its MappedFields and Modules",
+            "Get a Sync",
             "Exit",
         ];
         let selection = Select::with_theme(&ColorfulTheme::default())
@@ -156,6 +157,23 @@ pub fn show_menu() {
                 }
             }
             6 => {
+                println!("Get a Sync!");
+                let sync_id: String = Input::with_theme(&ColorfulTheme::default())
+                    .with_prompt("Sync ID:")
+                    .interact()
+                    .unwrap();
+
+                let result = rt.block_on(async { dynamor::get_sync(sync_id.as_str()).await });
+                match result {
+                    Ok(result) => {
+                        println!("Sync id {} is {}", sync_id, result.cyan());
+                    }
+                    Err(e) => {
+                        println!("Error: {:?}", e);
+                    }
+                }
+            }
+            7 => {
                 println!("Exiting...");
                 break;
             }

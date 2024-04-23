@@ -135,3 +135,45 @@ pub struct Module {
     #[serde(rename = "MId")]
     pub m_id: String,
 }
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct Sync {
+    #[serde(rename = "PK")]
+    pub pk: String,
+    #[serde(rename = "SK")]
+    pub sk: String,
+    #[serde(rename = "CrAt")]
+    pub cr_at: String,
+    #[serde(rename = "IId")]
+    pub i_id: String,
+    #[serde(rename = "SId")]
+    pub s_id: String,
+    #[serde(rename = "SPriId")]
+    pub s_pri_id: String,
+    #[serde(rename = "SPriMod")]
+    pub s_pri_mod: String,
+    #[serde(rename = "SSecId")]
+    pub s_sec_id: String,
+    #[serde(rename = "SSecMod")]
+    pub s_sec_mod: String,
+    #[serde(rename = "SStatus")]
+    pub s_status: String,
+    #[serde(rename = "SResult")]
+    pub s_result: SResult,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct SResult {
+    #[serde(rename = "data")]
+    pub data: SyncResultData,
+    #[serde(rename = "secondaryId")]
+    pub secondary_id: String,
+    #[serde(rename = "syncStatus")]
+    pub sync_status: String,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct SyncResultData {
+    #[serde(rename = "data")]
+    pub data: String,
+}

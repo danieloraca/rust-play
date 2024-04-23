@@ -5,14 +5,14 @@ extern crate serde_dynamodb;
 use crate::transformers::integrations;
 use crate::transformers::mapped_fields;
 use crate::transformers::modules;
-use std::env;
-
+use crate::transformers::syncs;
+use crate::types::Sync;
 use crate::types::{Integration, MappedField, Module};
-
 use rusoto_core::Region;
 use rusoto_dynamodb::{AttributeValue, DynamoDb, DynamoDbClient, QueryInput};
 use serde::Serialize;
 use std::collections::HashMap;
+use std::env;
 
 #[derive(Serialize)]
 enum ProcessedItem {
@@ -340,8 +340,47 @@ pub async fn get_integration_with_mapped_fields_and_modules(
         }
     };
 
-    // println!("Items: {:?}", items);
-    // let serialized = serde_json::to_string_pretty("xxx").unwrap();
+    let serialized = serde_json::to_string_pretty(&items).unwrap();
+    Ok(serialized)
+}
+
+pub async fn get_sync(sync_id: &str) -> Result<String, ()> {
+    let client = setup_aws_client();
+    let mut query = HashMap::new();
+
+    // S#01HA53XB214VS6RCEPKV0489QM
+
+    query.insert(
+        String::from(":pk"),
+        AttributeValue {
+            s: Some(String::from(sync_id)),
+            ..Default::default()
+        },
+    );
+
+    let items_result = client
+        .query(QueryInput {
+            table_name: String::from("Stage-Integrations"),
+            key_condition_expression: Some(String::from("PK = :pk")),
+            expression_attribute_values: Some(query),
+            ..Default::default()
+        })
+        .await;
+
+    let items = match items_result {
+        Ok(result) => match result.items {
+            Some(items) => items
+                .iter()
+                .map(|item| syncs::process_sync_item(item))
+                .collect::<Vec<Sync>>(),
+            None => Vec::new(),
+        },
+        Err(err) => {
+            eprintln!("Error: {}", err);
+            Vec::new()
+        }
+    };
+
     let serialized = serde_json::to_string_pretty(&items).unwrap();
     Ok(serialized)
 }
