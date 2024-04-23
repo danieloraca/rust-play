@@ -11,7 +11,15 @@ use crate::types::{Integration, MappedField, Module};
 
 use rusoto_core::Region;
 use rusoto_dynamodb::{AttributeValue, DynamoDb, DynamoDbClient, QueryInput};
+use serde::Serialize;
 use std::collections::HashMap;
+
+#[derive(Serialize)]
+enum ProcessedItem {
+    Integration(Integration),
+    MappedField(MappedField),
+    Module(Module),
+}
 
 pub async fn get_integration(integration_id: &str) -> Result<String, ()> {
     let client = setup_aws_client();
@@ -46,7 +54,7 @@ pub async fn get_integration(integration_id: &str) -> Result<String, ()> {
         Ok(result) => match result.items {
             Some(items) => items
                 .iter()
-                .map(|item| integrations::process_integrations_item(item))
+                .map(|item| integrations::process_integration_item(item))
                 .collect::<Vec<Integration>>(),
             None => Vec::new(),
         },
@@ -255,6 +263,85 @@ pub async fn get_all_modules_for_integration(integration_id: &str) -> Result<Str
         }
     };
 
+    let serialized = serde_json::to_string_pretty(&items).unwrap();
+    Ok(serialized)
+}
+
+pub async fn get_integration_with_mapped_fields_and_modules(
+    integration_id: &str,
+) -> Result<String, ()> {
+    let client = setup_aws_client();
+    let mut query = HashMap::new();
+    let sk = format!("{}", integration_id);
+
+    //I#01HV177W1JAS01D5J3EZDSKCC0
+
+    query.insert(
+        String::from(":pk"),
+        AttributeValue {
+            s: Some(String::from(integration_id)),
+            ..Default::default()
+        },
+    );
+
+    query.insert(
+        String::from(":sk"),
+        AttributeValue {
+            s: Some(String::from(sk)),
+            ..Default::default()
+        },
+    );
+
+    let items_result = client
+        .query(QueryInput {
+            table_name: String::from("Stage-Integrations"),
+            key_condition_expression: Some(String::from("PK = :pk and begins_with(SK, :sk)")),
+            expression_attribute_values: Some(query),
+            ..Default::default()
+        })
+        .await;
+
+    let items = match items_result {
+        Ok(result) => match result.items {
+            Some(items) => items
+                .iter()
+                .map(|item| {
+                    let pk = item
+                        .get("PK")
+                        .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+                        .unwrap_or_else(|| panic!("PK attribute not found"));
+
+                    let sk = item
+                        .get("SK")
+                        .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))
+                        .unwrap_or_else(|| panic!("SK attribute not found"));
+
+                    let pk_f = format!("{}#F#", pk);
+                    let pk_m = format!("{}#M#", pk);
+
+                    let processed_item = if pk == sk {
+                        ProcessedItem::Integration(integrations::process_integration_item(item))
+                    } else if sk.contains(&pk_f) {
+                        ProcessedItem::MappedField(mapped_fields::process_mapped_field_item(item))
+                    } else if sk.contains(&pk_m) {
+                        ProcessedItem::Module(modules::process_module_item(item))
+                    } else {
+                        panic!("Unknown item type");
+                    };
+
+                    processed_item
+                })
+                .collect::<Vec<_>>(),
+            None => Vec::new(),
+        },
+        Err(err) => {
+            eprintln!("Error: {}", err);
+            Vec::new()
+        }
+    };
+
+    // println!("Items: {:?}", items);
+    // let serialized = serde_json::to_string_pretty("xxx").unwrap();
     let serialized = serde_json::to_string_pretty(&items).unwrap();
     Ok(serialized)
 }

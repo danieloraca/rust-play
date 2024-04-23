@@ -5,7 +5,7 @@ use crate::types::{
 use rusoto_dynamodb::AttributeValue;
 use std::collections::HashMap;
 
-pub fn process_integrations_item(item: &HashMap<String, AttributeValue>) -> Integration {
+pub fn process_integration_item(item: &HashMap<String, AttributeValue>) -> Integration {
     let pk = item
         .get("PK")
         .and_then(|attr| attr.s.as_ref().map(|s| s.to_string()))

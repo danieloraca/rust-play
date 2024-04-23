@@ -14,6 +14,7 @@ pub fn show_menu() {
             "Get all MappedFields for an Integration",
             "Get a Module",
             "Get all Modules for an Integration",
+            "Get an Integration with all its MappedFields and Modules",
             "Exit",
         ];
         let selection = Select::with_theme(&ColorfulTheme::default())
@@ -132,6 +133,29 @@ pub fn show_menu() {
                 }
             }
             5 => {
+                println!("Get an Integration with all its MappedFields and Modules!");
+                let integration_id: String = Input::with_theme(&ColorfulTheme::default())
+                    .with_prompt("Integration ID:")
+                    .interact()
+                    .unwrap();
+                let result = rt.block_on(async {
+                    dynamor::get_integration_with_mapped_fields_and_modules(integration_id.as_str())
+                        .await
+                });
+                match result {
+                    Ok(result) => {
+                        println!(
+                            "Integration with id {} is {}",
+                            integration_id,
+                            result.cyan()
+                        );
+                    }
+                    Err(e) => {
+                        println!("Error: {:?}", e);
+                    }
+                }
+            }
+            6 => {
                 println!("Exiting...");
                 break;
             }
