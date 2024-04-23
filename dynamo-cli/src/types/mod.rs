@@ -176,12 +176,12 @@ pub struct SResult {
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct SyncResultData {
-    #[serde(rename = "data")]
-    pub data: String,
+    #[serde(rename = "error")]
+    pub error: SyncError,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct SyncError {
     #[serde(rename = "error")]
-    pub error: String,
+    pub sync_error: String,
 }
