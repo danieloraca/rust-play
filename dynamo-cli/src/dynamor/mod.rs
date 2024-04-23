@@ -23,7 +23,7 @@ enum ProcessedItem {
     Module(Module),
 }
 
-pub async fn get_integration(integration_id: &str) -> Result<String, ()> {
+pub async fn get_integration_by_id(integration_id: &str) -> Result<Option<Vec<Integration>>, ()> {
     let client = setup_aws_client();
     let mut query = HashMap::new();
 
@@ -66,7 +66,17 @@ pub async fn get_integration(integration_id: &str) -> Result<String, ()> {
         }
     };
 
-    let serialized = serde_json::to_string_pretty(&items).unwrap();
+    if items.is_empty() {
+        Ok(None)
+    } else {
+        Ok(Some(items))
+    }
+}
+
+pub async fn get_integration(integration_id: &str) -> Result<String, ()> {
+    let integration = get_integration_by_id(integration_id).await.unwrap();
+
+    let serialized = serde_json::to_string_pretty(&integration).unwrap();
 
     Ok(serialized)
 }
@@ -108,31 +118,10 @@ pub async fn get_all_integrations_for_owner(owner_id: &str) -> Result<String, ()
 
             for integration_id in integration_ids {
                 println!("Integration ID: {}", integration_id);
-                // Call get_integration function for each integration ID
-                let integration_result = get_integration(&integration_id).await;
-                match integration_result {
-                    Ok(integration_json) => {
-                        // Deserialize the integration JSON and add it to the list
-                        if let Ok(integration) =
-                            serde_json::from_str::<Integration>(&integration_json)
-                        {
-                            all_integrations.push(integration);
-                        } else {
-                            eprintln!(
-                                "Error deserializing integration JSON for ID: {}",
-                                integration_id
-                            );
-                        }
-                    }
-                    Err(_err) => {
-                        println!("BAH")
-                    }
-                }
+                let integration_result = get_integration_by_id(&integration_id).await;
+                all_integrations.push(integration_result.unwrap().unwrap());
             }
-
-            // Serialize the list of integrations to JSON
-            let serialized = serde_json::to_string_pretty(&all_integrations).unwrap();
-            Ok(serialized)
+            Ok(all_integrations)
         }
         Err(err) => {
             eprintln!("Error: {}", err);
