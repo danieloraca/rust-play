@@ -625,7 +625,7 @@ pub async fn get_all_syncs_for_primary_entity(primary_entity: &str) -> Result<St
 }
 
 pub async fn get_all_syncs_for_secondary_entity(secondary_entity: &str) -> Result<String, ()> {
-    //
+    // I'm bored
     let client = setup_aws_client();
     let mut query = HashMap::new();
 
