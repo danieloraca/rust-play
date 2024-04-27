@@ -1,9 +1,9 @@
 use lambda_runtime::{run, service_fn, tracing, Error, LambdaEvent};
 use rusoto_core::{ByteStream, Region};
 use rusoto_s3::{S3Client, S3};
-use tokio::io::AsyncReadExt;
-
 use serde::{Deserialize, Serialize};
+use serde_json::Value;
+use tokio::io::AsyncReadExt;
 
 #[derive(Deserialize)]
 struct Request {
@@ -17,7 +17,7 @@ struct Response {
     content: String,
 }
 
-async fn function_handler(event: LambdaEvent<Request>) -> Result<String, Error> {
+async fn function_handler(event: LambdaEvent<Request>) -> Result<Value, Error> {
     let name: String = event.payload.name;
     let version: u16 = event.payload.version;
     let bucket: String = event.payload.bucket;
@@ -43,8 +43,9 @@ async fn function_handler(event: LambdaEvent<Request>) -> Result<String, Error> 
 
     // Convert the content to a string
     let content: String = String::from_utf8(content)?;
+    let json_value: Value = serde_json::from_str(content.as_str())?;
 
-    Ok(content)
+    Ok(json_value)
 }
 
 #[tokio::main]
