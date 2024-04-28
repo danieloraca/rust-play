@@ -1,33 +1,33 @@
-use lambda_runtime::{run, service_fn, tracing, Error, LambdaEvent};
+use lambda_runtime::{service_fn, tracing, Error, LambdaEvent};
 use rusoto_core::{ByteStream, Region};
 use rusoto_s3::{S3Client, S3};
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 use serde_json::Value;
 use tokio::io::AsyncReadExt;
-
-#[derive(Deserialize)]
-struct Request {
-    bucket: String,
-    name: String,
-    version: u16,
-}
 
 #[derive(Serialize)]
 struct Response {
     content: String,
 }
 
-async fn function_handler(event: LambdaEvent<Request>) -> Result<Value, Error> {
-    let name: String = event.payload.name;
-    let version: u16 = event.payload.version;
-    let bucket: String = event.payload.bucket;
+async fn handler(event: LambdaEvent<Value>) -> Result<Value, Error> {
+    let payload = event.payload;
+    let body_json: Value = serde_json::from_str(payload["body"].as_str().unwrap())?;
+    let bucket = body_json["bucket"].as_str().unwrap();
+    let name = body_json["name"].as_str().unwrap();
+    let version = body_json["version"].as_i64().unwrap();
 
+    tracing::info!("Payload: {:?}", payload);
+    tracing::info!("Name: {}", name);
+    tracing::info!("Version: {}", version);
     let key: String = format!("src/{}/{}/{}.json", &name, version, name);
     let s3_client: S3Client = S3Client::new(Region::EuWest1);
+    tracing::info!("Bucket: {}", bucket);
+    tracing::info!("Key: {}", key);
 
     let output = s3_client
         .get_object(rusoto_s3::GetObjectRequest {
-            bucket,
+            bucket: bucket.to_string(),
             key,
             ..Default::default()
         })
@@ -44,13 +44,12 @@ async fn function_handler(event: LambdaEvent<Request>) -> Result<Value, Error> {
     // Convert the content to a string
     let content: String = String::from_utf8(content)?;
     let json_value: Value = serde_json::from_str(content.as_str())?;
-
+    tracing::info!("JSON Value: {:?}", json_value);
     Ok(json_value)
 }
 
 #[tokio::main]
 async fn main() -> Result<(), Error> {
     tracing::init_default_subscriber();
-
-    run(service_fn(function_handler)).await
+    lambda_runtime::run(service_fn(handler)).await
 }
