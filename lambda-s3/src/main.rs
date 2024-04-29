@@ -12,18 +12,28 @@ struct Response {
 
 async fn handler(event: LambdaEvent<Value>) -> Result<Value, Error> {
     let payload = event.payload;
-    let body_json: Value = serde_json::from_str(payload["body"].as_str().unwrap())?;
-    let bucket = body_json["bucket"].as_str().unwrap();
-    let name = body_json["name"].as_str().unwrap();
-    let version = body_json["version"].as_str().unwrap();
+    let body_json: Value = serde_json::from_str(
+        payload["body"]
+            .as_str()
+            .ok_or_else(|| anyhow::anyhow!("Invalid body"))?,
+    )
+    .map_err(|e| -> Error { anyhow::anyhow!("Error parsing JSON: {}", e).into() })?;
 
-    tracing::info!("Payload: {:?}", payload);
-    tracing::info!("Name: {}", name);
-    tracing::info!("Version: {}", version);
-    let key: String = format!("src/{}/{}/{}.json", &name, version, name);
+    let bucket = body_json["bucket"]
+        .as_str()
+        .ok_or_else(|| anyhow::anyhow!("No bucket found in payload"))?;
+    let name = body_json["name"]
+        .as_str()
+        .ok_or_else(|| anyhow::anyhow!("No name found in payload"))?;
+    let version = body_json["version"]
+        .as_str()
+        .ok_or_else(|| anyhow::anyhow!("No version found in payload"))?;
+
+    tracing::info!("Payload processed: Name: {}, Version: {}", name, version);
+
+    let key = format!("src/{}/{}/{}.json", name, version, name);
     let s3_client: S3Client = S3Client::new(Region::EuWest1);
-    tracing::info!("Bucket: {}", bucket);
-    tracing::info!("Key: {}", key);
+    tracing::info!("Requesting {} from {}", key, bucket);
 
     let output = s3_client
         .get_object(rusoto_s3::GetObjectRequest {
@@ -44,7 +54,7 @@ async fn handler(event: LambdaEvent<Value>) -> Result<Value, Error> {
     // Convert the content to a string
     let content: String = String::from_utf8(content)?;
     let json_value: Value = serde_json::from_str(content.as_str())?;
-    tracing::info!("JSON Value: {:?}", json_value);
+    // tracing::info!("JSON Value: {:?}", json_value);
     Ok(json_value)
 }
 
