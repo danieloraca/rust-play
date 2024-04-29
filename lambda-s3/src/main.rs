@@ -15,7 +15,7 @@ async fn handler(event: LambdaEvent<Value>) -> Result<Value, Error> {
     let body_json: Value = serde_json::from_str(payload["body"].as_str().unwrap())?;
     let bucket = body_json["bucket"].as_str().unwrap();
     let name = body_json["name"].as_str().unwrap();
-    let version = body_json["version"].as_i64().unwrap();
+    let version = body_json["version"].as_str().unwrap();
 
     tracing::info!("Payload: {:?}", payload);
     tracing::info!("Name: {}", name);
