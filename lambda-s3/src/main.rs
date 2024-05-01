@@ -3,6 +3,7 @@ use rusoto_core::{ByteStream, Region};
 use rusoto_s3::{S3Client, S3};
 use serde::Serialize;
 use serde_json::Value;
+use std::env;
 use tokio::io::AsyncReadExt;
 
 #[derive(Serialize)]
@@ -19,9 +20,10 @@ async fn handler(event: LambdaEvent<Value>) -> Result<Value, Error> {
     )
     .map_err(|e| -> Error { anyhow::anyhow!("Error parsing JSON: {}", e).into() })?;
 
-    let bucket = body_json["bucket"]
-        .as_str()
-        .ok_or_else(|| anyhow::anyhow!("No bucket found in payload"))?;
+    let bucket = match env::var("BUCKET") {
+        Ok(val) => val,
+        Err(_) => return Err(anyhow::anyhow!("No BUCKET environment variable found").into()),
+    };
     let name = body_json["name"]
         .as_str()
         .ok_or_else(|| anyhow::anyhow!("No name found in payload"))?;
