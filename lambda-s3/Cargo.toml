@@ -39,5 +39,5 @@ panic = 'abort'
 incremental = false
 
 [package.metadata.lambda.deploy]
-memory = 512
+memory = 128
 tags = { "project" = "lambda-s3" }
