@@ -3,6 +3,7 @@ use rusoto_core::{ByteStream, Region};
 use rusoto_s3::{S3Client, S3};
 use serde::Serialize;
 use serde_json::Value;
+use std::collections::HashMap;
 use std::env;
 use tokio::io::AsyncReadExt;
 
@@ -10,6 +11,8 @@ use tokio::io::AsyncReadExt;
 struct Response {
     content: String,
 }
+
+static mut CACHE: Option<HashMap<String, Value>> = None;
 
 async fn handler(event: LambdaEvent<Value>) -> Result<Value, Error> {
     let payload = event.payload;
@@ -34,13 +37,23 @@ async fn handler(event: LambdaEvent<Value>) -> Result<Value, Error> {
     tracing::info!("Payload processed: Name: {}, Version: {}", name, version);
 
     let key = format!("src/{}/{}/{}.json", name, version, name);
+
+    // Check if the JSON data is already in the cache
+    let cache_result;
+    unsafe {
+        cache_result = CACHE.as_ref().and_then(|cache| cache.get(&key));
+    }
+    if let Some(value) = cache_result {
+        return Ok(value.clone());
+    }
+
     let s3_client: S3Client = S3Client::new(Region::EuWest1);
     tracing::info!("Requesting {} from {}", key, bucket);
 
     let output = s3_client
         .get_object(rusoto_s3::GetObjectRequest {
             bucket: bucket.to_string(),
-            key,
+            key: key.clone(),
             ..Default::default()
         })
         .await?;
@@ -56,7 +69,15 @@ async fn handler(event: LambdaEvent<Value>) -> Result<Value, Error> {
     // Convert the content to a string
     let content: String = String::from_utf8(content)?;
     let json_value: Value = serde_json::from_str(content.as_str())?;
-    // tracing::info!("JSON Value: {:?}", json_value);
+
+    // Store JSON data in cache
+    unsafe {
+        if CACHE.is_none() {
+            CACHE = Some(HashMap::new());
+        }
+        CACHE.as_mut().unwrap().insert(key, json_value.clone());
+    }
+
     Ok(json_value)
 }
 
