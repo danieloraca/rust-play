@@ -5,6 +5,8 @@ use serde::Serialize;
 use serde_json::Value;
 use std::collections::HashMap;
 use std::env;
+use std::sync::{Arc, Mutex};
+use std::time::{Duration, Instant};
 use tokio::io::AsyncReadExt;
 
 #[derive(Serialize)]
@@ -12,7 +14,13 @@ struct Response {
     content: String,
 }
 
-static mut CACHE: Option<HashMap<String, Value>> = None;
+#[derive(Clone)]
+struct CacheItem {
+    value: Value,
+    expiration_time: Instant,
+}
+
+static mut CACHE: Option<Arc<Mutex<HashMap<String, CacheItem>>>> = None;
 
 async fn handler(event: LambdaEvent<Value>) -> Result<Value, Error> {
     let payload = event.payload;
@@ -38,13 +46,19 @@ async fn handler(event: LambdaEvent<Value>) -> Result<Value, Error> {
 
     let key = format!("src/{}/{}/{}.json", name, version, name);
 
-    // Check if the JSON data is already in the cache
+    // Check cache first
     let cache_result;
     unsafe {
-        cache_result = CACHE.as_ref().and_then(|cache| cache.get(&key));
+        cache_result = CACHE.as_ref().and_then(|cache| {
+            let cache = cache.lock().unwrap();
+            cache.get(&key).cloned()
+        });
     }
-    if let Some(value) = cache_result {
-        return Ok(value.clone());
+    if let Some(cache_item) = cache_result {
+        // Check if cache item is expired
+        if Instant::now() < cache_item.expiration_time {
+            return Ok(cache_item.value);
+        }
     }
 
     let s3_client: S3Client = S3Client::new(Region::EuWest1);
@@ -70,12 +84,20 @@ async fn handler(event: LambdaEvent<Value>) -> Result<Value, Error> {
     let content: String = String::from_utf8(content)?;
     let json_value: Value = serde_json::from_str(content.as_str())?;
 
-    // Store JSON data in cache
+    // Store JSON data in cache with expiration time
+    let expiration_time = Instant::now() + Duration::from_secs(300); // 5 minutes expiration time
+    let cache_item = CacheItem {
+        value: json_value.clone(),
+        expiration_time,
+    };
+
     unsafe {
         if CACHE.is_none() {
-            CACHE = Some(HashMap::new());
+            CACHE = Some(Arc::new(Mutex::new(HashMap::new())));
         }
-        CACHE.as_mut().unwrap().insert(key, json_value.clone());
+        let cache = CACHE.as_ref().unwrap().clone();
+        let mut cache = cache.lock().unwrap();
+        cache.insert(key, cache_item);
     }
 
     Ok(json_value)
