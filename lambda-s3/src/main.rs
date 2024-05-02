@@ -1,18 +1,12 @@
 use lambda_runtime::{service_fn, tracing, Error, LambdaEvent};
 use rusoto_core::{ByteStream, Region};
 use rusoto_s3::{S3Client, S3};
-use serde::Serialize;
 use serde_json::Value;
 use std::collections::HashMap;
 use std::env;
 use std::sync::{Arc, Mutex};
 use std::time::{Duration, Instant};
 use tokio::io::AsyncReadExt;
-
-#[derive(Serialize)]
-struct Response {
-    content: String,
-}
 
 #[derive(Clone)]
 struct CacheItem {
