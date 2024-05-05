@@ -1,11 +1,12 @@
 extern crate rusoto_core;
 extern crate rusoto_rds;
+use mysql::{prelude::Queryable, Pool};
 
 use rusoto_core::Region;
 use rusoto_rds::{DescribeDBInstancesMessage, Rds, RdsClient};
 
-#[tokio::main]
-async fn main() {
+async fn list_rds_instances(
+) -> Result<(), rusoto_core::RusotoError<rusoto_rds::DescribeDBInstancesError>> {
     let region = Region::EuWest1;
     let client = RdsClient::new(region);
 
@@ -32,9 +33,20 @@ async fn main() {
                     db_instance.read_replica_db_instance_identifiers
                 );
             }
+            Ok(())
         }
         Err(error) => {
             println!("Error: {:?}", error);
+            Err(error)
         }
     }
+}
+
+#[tokio::main]
+async fn main() -> Result<(), mysql::Error> {
+    if let Err(_) = list_rds_instances().await {
+        println!("Error listing RDS instances")
+    }
+
+    Ok(())
 }
