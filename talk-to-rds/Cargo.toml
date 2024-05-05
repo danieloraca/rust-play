@@ -1,0 +1,9 @@
+[package]
+name = "talk-to-rds"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+rusoto_core = "0.48.0"
+rusoto_rds = "0.48.0"
+tokio = { version = "1.37.0", features = ["full"] }
