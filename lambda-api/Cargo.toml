@@ -1,0 +1,9 @@
+[package]
+name = "dan-lambda-api"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+lambda_runtime = "0.11.2"
+serde_json = "1.0.117"
+tokio = { version = "1.37.0", features = ["full"] }
