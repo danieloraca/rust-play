@@ -8,7 +8,8 @@ async fn main() -> Result<(), Error> {
 
 async fn handler(event: LambdaEvent<Value>) -> Result<Value, Error> {
     let payload = event.payload;
-    let payload_data = payload["body"].clone();
+    // let a = payload.clone();
+
     // let payload_data = if let Some(body_value) = &payload.get("body") {
     //     if let Some(body_str) = body_value.as_str() {
     //         body_str
@@ -16,17 +17,14 @@ async fn handler(event: LambdaEvent<Value>) -> Result<Value, Error> {
     //         "No body found1"
     //     }
     // } else {
-    //     match payload["body"].clone() {
-    //         Value::String(_body_str) => "yay",
-    //         _ => "No body found2",
-    //     }
+    //     payload.to_string().as_str()
     // };
 
     let result: u64 = heavy_computation(1000000);
 
     let json_value = json!({
         "message": "Howdy!",
-        "payload": payload_data,
+        "payload": payload,
         "result": result
     });
 
