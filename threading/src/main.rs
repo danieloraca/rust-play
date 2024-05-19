@@ -20,7 +20,7 @@ fn main() {
     let num_threads = 4;
     let max_rows = 1_000_000;
     let rows_per_thread = max_rows / num_threads;
-    let batch_size = 100_000;
+    let batch_size = 1_000_000;
 
     let mut handles = vec![];
 
@@ -45,17 +45,20 @@ fn main() {
                     email,
                 };
                 batch.push(person);
+
                 if batch.len() >= batch_size {
-                    let mut writer = writer.lock().expect("Failed to lock writer");
-                    for record in &batch {
-                        writer
-                            .write_record(&[
-                                record.id.to_string(),
-                                record.name.clone(),
-                                record.age.to_string(),
-                                record.email.clone(),
-                            ])
-                            .expect("Cannot write record");
+                    {
+                        let mut writer = writer.lock().expect("Failed to lock writer");
+                        for record in &batch {
+                            writer
+                                .write_record(&[
+                                    record.id.to_string(),
+                                    record.name.clone(),
+                                    record.age.to_string(),
+                                    record.email.clone(),
+                                ])
+                                .expect("Cannot write record");
+                        }
                     }
                     batch.clear();
                 }
@@ -76,6 +79,7 @@ fn main() {
                 }
             }
         });
+
         handles.push(handle);
     }
 
