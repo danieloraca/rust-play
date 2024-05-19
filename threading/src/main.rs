@@ -22,6 +22,7 @@ fn main() {
     let num_threads = 4;
     let max_rows = 1_000_000;
     let rows_per_thread = max_rows / num_threads;
+    let batch_size = 100_000;
 
     for _ in 0..num_threads {
         let tx = Arc::clone(&tx);
@@ -43,9 +44,18 @@ fn main() {
                     email,
                 };
                 rows.push(person);
+
+                // Send in batches
+                if rows.len() >= batch_size {
+                    tx.send(rows).expect("Could not send data!");
+                    rows = Vec::with_capacity(batch_size); // Start a new batch
+                }
             }
 
-            tx.send(rows).expect("Could not send data!");
+            // Send remaining rows
+            if !rows.is_empty() {
+                tx.send(rows).expect("Could not send data!");
+            }
         });
     }
 
