@@ -152,12 +152,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "523dc4f511e55ab87b694dc30d0f820d60906ef06413f93d4d7a1385599cc149"
 
 [[package]]
-name = "micro_rand"
-version = "0.0.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "69368ce45883d875ef104abdadeb0ba18d5ba2666b236ab6b72ce62f1bb92f5a"
-
-[[package]]
 name = "names"
 version = "0.14.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -331,7 +325,6 @@ name = "threading"
 version = "0.1.0"
 dependencies = [
  "csv",
- "micro_rand",
  "names",
  "rand",
  "uuid",
