@@ -1,0 +1,4 @@
+attendeeId,eventId,entityId,contactId,status,metadata,createdAt
+203339,4887,4887,91548,Attended,barcode_scan|eece456e-224f-4cf5-a389-69b11e6dbf0a,1716020159
+217946,4887,4887,87263,Attended,barcode_scan|5a177fdb-761f-48eb-b494-28ddd902e136,1716021402
+210296,4887,4887,93095,Attended,barcode_scan|8279d6e4-5f2d-420b-82ee-4b262ea68be6,1716021444

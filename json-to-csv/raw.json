@@ -1,0 +1,286 @@
+{
+  "data": {
+    "AttendanceEvents": [
+      {
+        "id": "2e78fb97-875b-4686-8c08-4c1c20d9616b",
+        "attendeeId": 144997,
+        "type": "update",
+        "values": {
+          "changes": "{\"status\":\"Attended\"}"
+        },
+        "reason": "barcode_scan",
+        "createdAt": 1671120327
+      },
+      {
+        "id": "ec2e7d1a-f224-4534-903a-e0b57b9e8f06",
+        "attendeeId": 144997,
+        "type": "check_in",
+        "values": {
+          "contactId": 37555,
+          "entityId": 4056,
+          "eventId": 4056,
+          "sourceAttendanceEventId": "2e78fb97-875b-4686-8c08-4c1c20d9616b"
+        },
+        "reason": "barcode_scan",
+        "createdAt": 1671120327
+      },
+      {
+        "id": "757ca601-fb30-4318-a949-f6dd71bc7a58",
+        "attendeeId": 143971,
+        "type": "update",
+        "values": {
+          "changes": "{\"status\":\"Cancelled\"}"
+        },
+        "reason": "api_override",
+        "createdAt": 1671120432
+      }
+    ],
+    "Attendances": [
+      {
+        "id": 143389,
+        "entityId": 4056,
+        "eventId": 4056,
+        "status": "Registered",
+        "guestCount": 0,
+        "contactId": 7341,
+        "contactUniqueId": "21CO00tkqsqofy00gpv4ihhv1e",
+        "email": "first.name@gmail.com",
+        "name": "First Name",
+        "updatedAt": 1671035506,
+        "createdAt": 1671035506
+      },
+      {
+        "id": 143866,
+        "entityId": 4056,
+        "eventId": 4056,
+        "status": "Registered",
+        "guestCount": 0,
+        "contactId": 42316,
+        "contactUniqueId": "21CO00tkra0l0u00e77iukfzrw",
+        "email": "second.name@gmail.com",
+        "name": "Second Name",
+        "updatedAt": 1671035506,
+        "createdAt": 1671035506
+      },
+      {
+        "id": 143873,
+        "entityId": 4056,
+        "eventId": 4056,
+        "status": "Registered",
+        "guestCount": 0,
+        "contactId": 28211,
+        "contactUniqueId": "21CO00tkr0livs00bf0gf0amqb",
+        "email": "third.name@gmail.com",
+        "name": "Third Name",
+        "updatedAt": 1671035506,
+        "createdAt": 1671035506
+      }
+    ],
+    "Downloads": [
+      {
+        "id": "e6b32b0b-9f1e-40c8-b73b-9a5eb01f9d27",
+        "eventId": 4056,
+        "type": "DownloadWasStarted",
+        "body": null,
+        "createdAt": 1671035505
+      },
+      {
+        "id": "de5e0e87-a36c-46e0-85bd-55e14d7d3984",
+        "eventId": 4056,
+        "type": "DownloadComplete",
+        "body": null,
+        "createdAt": 1671035506
+      },
+      {
+        "id": "34ecf9c5-73fe-4a25-81fb-771cc366f7d1",
+        "eventId": 4056,
+        "type": "UpdateWasStarted",
+        "body": null,
+        "createdAt": 1671120430
+      }
+    ],
+    "Events": [
+      {
+        "id": 4056,
+        "name": "Event 1 2022",
+        "startDate": 1671121800,
+        "endDate": 1671134400,
+        "timezone": "Europe/London",
+        "attendanceCount": 1243,
+        "locationId": "21LO00tkr23xqr009xeqd66v12",
+        "refreshedAt": 1671132763
+      },
+      {
+        "id": 4386,
+        "name": "Event 2 2023",
+        "startDate": 1686852000,
+        "endDate": 1686862800,
+        "timezone": "Europe/London",
+        "attendanceCount": 116,
+        "locationId": "21LO00tkrqxyp000l94fdz8904",
+        "refreshedAt": null
+      },
+      {
+        "id": 4887,
+        "name": "Festival 2024",
+        "startDate": 1715940000,
+        "endDate": 1716048000,
+        "timezone": "Europe/London",
+        "attendanceCount": 2648,
+        "locationId": null,
+        "refreshedAt": 1716016708
+      }
+    ],
+    "Locations": [
+      {
+        "id": "21LO00tkr23xqr009xeqd66v12",
+        "title": "Union Square",
+        "address": "Some Street, Moscow, Russia",
+        "lat": 51.754974365234375,
+        "lon": -0.24298590421676636
+      },
+      {
+        "id": "21LO00tkrqxyp000l94fdz8904",
+        "title": "Prince Edward Hall",
+        "address": "First Floor, UK",
+        "lat": 51.75312805175781,
+        "lon": -0.242216095328331
+      },
+      {
+        "id": "21LO00tkr9nv8u00ka0pm3g4x6",
+        "title": "College Lane",
+        "address": "College Lane, USA",
+        "lat": 51.75312805175781,
+        "lon": -0.242216095328331
+      }
+    ],
+    "SessionTimes": [
+      {
+        "id": 5419,
+        "name": "17 May 2024 10:00 - 10:30",
+        "startDate": 1715940000,
+        "endDate": 1715941800,
+        "timezone": "Europe/London",
+        "eventId": 4887,
+        "sessionId": 5418,
+        "attendanceCount": 11
+      },
+      {
+        "id": 5420,
+        "name": "17 May 2024 10:30 - 11:00",
+        "startDate": 1715941800,
+        "endDate": 1715943600,
+        "timezone": "Europe/London",
+        "eventId": 4887,
+        "sessionId": 5418,
+        "attendanceCount": 11
+      },
+      {
+        "id": 5421,
+        "name": "17 May 2024 12:30 - 13:00",
+        "startDate": 1715949000,
+        "endDate": 1715950800,
+        "timezone": "Europe/London",
+        "eventId": 4887,
+        "sessionId": 5418,
+        "attendanceCount": 11
+      }
+    ],
+    "Sessions": [
+      {
+        "id": 5418,
+        "name": "Session 1",
+        "startDate": 1715940000,
+        "endDate": 1715961600,
+        "timezone": "Europe/London",
+        "eventId": 4887,
+        "sessionTimeCount": 5,
+        "attendanceCount": 59,
+        "locationId": "21LO00tks8fhhr003pgevm1u76"
+      },
+      {
+        "id": 5069,
+        "name": "Session 2",
+        "startDate": 1715940000,
+        "endDate": 1715961600,
+        "timezone": "Europe/London",
+        "eventId": 4887,
+        "sessionTimeCount": 1,
+        "attendanceCount": 370,
+        "locationId": "21LO00tkr03m60001af098aw2u"
+      },
+      {
+        "id": 5181,
+        "name": "Session 3",
+        "startDate": 1715940000,
+        "endDate": 1715958000,
+        "timezone": "Europe/London",
+        "eventId": 4887,
+        "sessionTimeCount": 3,
+        "attendanceCount": 69,
+        "locationId": "21LO00tks9m2s800dxo2ema689"
+      }
+    ],
+    "SyncQueue": [
+      {
+        "attendeeId": 203339,
+        "eventId": 4887,
+        "entityId": 4887,
+        "contactId": 91548,
+        "status": "Attended",
+        "metadata": {
+          "reason": "barcode_scan",
+          "sourceAttendanceEventId": "eece456e-224f-4cf5-a389-69b11e6dbf0a"
+        },
+        "createdAt": 1716020159
+      },
+      {
+        "attendeeId": 217946,
+        "eventId": 4887,
+        "entityId": 4887,
+        "contactId": 87263,
+        "status": "Attended",
+        "metadata": {
+          "reason": "barcode_scan",
+          "sourceAttendanceEventId": "5a177fdb-761f-48eb-b494-28ddd902e136"
+        },
+        "createdAt": 1716021402
+      },
+      {
+        "attendeeId": 210296,
+        "eventId": 4887,
+        "entityId": 4887,
+        "contactId": 93095,
+        "status": "Attended",
+        "metadata": {
+          "reason": "barcode_scan",
+          "sourceAttendanceEventId": "8279d6e4-5f2d-420b-82ee-4b262ea68be6"
+        },
+        "createdAt": 1716021444
+      }
+    ],
+    "Syncs": [
+      {
+        "id": "f8fac1b5-3358-4023-a510-db7288811fec",
+        "eventId": 4056,
+        "type": "manual",
+        "metadata": "{\"Attended\":36}",
+        "createdAt": 1671123864
+      },
+      {
+        "id": "b222ba65-2ff0-40fa-a518-4392112b61c0",
+        "eventId": 4056,
+        "type": "manual",
+        "metadata": "{\"Attended\":1}",
+        "createdAt": 1671124263
+      },
+      {
+        "id": "eccb1a1e-ebbf-4bb7-bbf7-92fa103caaa8",
+        "eventId": 4056,
+        "type": "manual",
+        "metadata": "{\"Attended\":1}",
+        "createdAt": 1671124306
+      }
+    ]
+  }
+}

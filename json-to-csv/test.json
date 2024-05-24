@@ -1,0 +1,16 @@
+{
+  "data": {
+    "AttendanceEvents": [
+      {
+        "id": "2e78fb97-875b-4686-8c08-4c1c20d9616b",
+        "attendeeId": 144997,
+        "type": "update",
+        "values": {
+          "changes": "{\"status\":\"Attended\"}"
+        },
+        "reason": "barcode_scan",
+        "createdAt": 1671120327
+      }
+    ]
+  }
+}
