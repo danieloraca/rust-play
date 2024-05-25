@@ -5,6 +5,7 @@ mod processor;
 mod types;
 
 fn main() -> () {
+    let start = std::time::Instant::now();
     let json_file_name = "raw.json";
     let csv_file_name = "sync_queue.csv";
     let attendances = json_reader::read_json_file(json_file_name);
@@ -12,5 +13,6 @@ fn main() -> () {
 
     csv_writer::write_to_csv(&attendances, &csv_content);
 
-    println!("Done!");
+    let elapsed = start.elapsed();
+    println!("Elapsed time: {} microseconds", elapsed.as_micros());
 }
