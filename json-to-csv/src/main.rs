@@ -37,5 +37,9 @@ fn main() {
 
     attendance_events
         .iter()
-        .for_each(|x| println!("{:?}", x.created_at));
+        .for_each(|attendance_event| println!("{:?}", attendance_event.created_at));
+
+    attendances
+        .iter()
+        .for_each(|attendance| println!("{:?}", attendance.name));
 }
