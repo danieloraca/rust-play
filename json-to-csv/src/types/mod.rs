@@ -1,4 +1,5 @@
 use serde::Deserialize;
+use serde::Serialize;
 
 #[derive(Debug, Deserialize)]
 pub struct AttendanceEvents {
@@ -8,9 +9,9 @@ pub struct AttendanceEvents {
     #[serde(rename = "type")]
     pub type_: String,
     pub values: Values,
-    pub reason: String,
+    pub reason: Option<String>,
     #[serde(rename = "createdAt")]
-    pub created_at: i32,
+    pub created_at: Option<i32>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -45,7 +46,7 @@ pub struct Attendances {
     #[serde(rename = "updatedAt")]
     pub updated_at: i32,
     #[serde(rename = "createdAt")]
-    pub created_at: i32,
+    pub created_at: Option<i32>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -140,9 +141,9 @@ pub struct SyncQueue {
 
 #[derive(Debug, Deserialize)]
 pub struct Metadata {
-    pub reason: String,
+    pub reason: Option<String>,
     #[serde(rename = "sourceAttendanceEventId")]
-    pub source_attendance_event_id: String,
+    pub source_attendance_event_id: Option<String>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -154,7 +155,7 @@ pub struct Syncs {
     pub type_: String,
     pub metadata: String,
     #[serde(rename = "createdAt")]
-    pub created_at: i32,
+    pub created_at: Option<i32>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -182,4 +183,54 @@ pub struct Data {
     pub sync_queue: Vec<SyncQueue>,
     #[serde(rename = "Syncs")]
     pub syncs: Vec<Syncs>,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+pub struct CsvData {
+    #[serde(rename = "attendeeId")]
+    pub attendee_id: i32,
+    #[serde(rename = "eventId")]
+    pub event_id: String,
+    #[serde(rename = "entityId")]
+    pub entity_id: String,
+    #[serde(rename = "contactId")]
+    pub contact_id: String,
+    pub status: String,
+    pub metadata: String,
+    #[serde(rename = "createdAt")]
+    pub created_at: Option<i32>,
+    #[serde(rename = "fullName")]
+    pub full_name: Option<String>,
+    pub email: Option<String>,
+}
+
+impl CsvData {
+    pub fn new(
+        attendee_id: i32,
+        event_id: String,
+        entity_id: String,
+        contact_id: String,
+        status: String,
+        metadata: String,
+        created_at: Option<i32>,
+        full_name: Option<String>,
+        email: Option<String>,
+    ) -> Self {
+        Self {
+            attendee_id,
+            event_id,
+            entity_id,
+            contact_id,
+            status,
+            metadata,
+            created_at,
+            full_name,
+            email,
+        }
+    }
+}
+
+#[derive(Debug, Deserialize)]
+pub struct CsvDataList {
+    pub data: Vec<CsvData>,
 }
