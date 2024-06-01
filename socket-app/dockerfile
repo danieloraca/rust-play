@@ -1,0 +1,10 @@
+# Use the official Rust image to build the application
+FROM rust:1.64 as builder
+WORKDIR /usr/src/myapp
+COPY . .
+RUN cargo install --path .
+
+# Use a minimal base image for the final executable
+FROM debian:buster-slim
+COPY --from=builder /usr/local/cargo/bin/socket-app /usr/local/bin/socket-app
+CMD ["socket-app"]

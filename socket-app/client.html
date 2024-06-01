@@ -1,0 +1,48 @@
+<!doctype html>
+<html>
+    <head>
+        <title>WebSocket Client</title>
+    </head>
+    <body>
+        <h1>WebSocket Client</h1>
+        <input id="message" type="text" placeholder="Enter message" />
+        <button onclick="sendMessage()">Send</button>
+        <div id="messages"></div>
+
+        <script>
+            const ws = new WebSocket(
+                "ws://lb-dan1-1064427414.eu-west-1.elb.amazonaws.com:9001",
+            );
+
+            ws.onopen = function (event) {
+                console.log("Connected to WebSocket server");
+            };
+
+            ws.onmessage = function (event) {
+                const messagesDiv = document.getElementById("messages");
+                const message = document.createElement("div");
+                message.textContent = `Received: ${event.data}`;
+                messagesDiv.appendChild(message);
+            };
+
+            ws.onclose = function (event) {
+                console.log("Disconnected from WebSocket server");
+            };
+
+            ws.onerror = function (event) {
+                console.error("WebSocket error:", event);
+            };
+
+            function sendMessage() {
+                const messageInput = document.getElementById("message");
+                const message = messageInput.value;
+                ws.send(message);
+                const messagesDiv = document.getElementById("messages");
+                const messageDiv = document.createElement("div");
+                messageDiv.textContent = `Sent: ${message}`;
+                messagesDiv.appendChild(messageDiv);
+                messageInput.value = "";
+            }
+        </script>
+    </body>
+</html>
