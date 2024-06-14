@@ -37,8 +37,8 @@ fn pixelate(img: &DynamicImage, new_dims: (u32, u32)) -> Image {
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let img = ImageReader::open("starlings.jpg")?.decode()?;
-    let img_ = pixelate(&img, (50, 50));
+    let img = ImageReader::open("test.png")?.decode()?;
+    let img_ = pixelate(&img, (3, 3));
 
     let _ = img_.save("pixelated.png");
     Ok(())
