@@ -1,6 +1,5 @@
 use image::io::Reader as ImageReader;
 use image::{DynamicImage, GenericImageView, ImageBuffer, Rgba};
-
 type Image = ImageBuffer<Rgba<u8>, Vec<u8>>;
 
 fn resize(img: &Image, new_dims: (u32, u32)) -> Image {
