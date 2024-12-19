@@ -1,0 +1,17 @@
+[package]
+name = "fibonacci"
+version = "0.0.1"
+edition = "2021"
+
+[dependencies]
+
+[[bin]]
+name = "fibonacci"
+path = "src/main.rs"
+
+[profile.release]
+lto = true
+strip = true
+opt-level = 3
+panic = "abort"
+codegen-units = 1
