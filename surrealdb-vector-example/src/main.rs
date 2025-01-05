@@ -1,3 +1,4 @@
+use serde::Deserialize;
 use serde_json::Value;
 use std::sync::LazyLock;
 use surrealdb::engine::remote::ws::{Client, Ws};
@@ -5,6 +6,13 @@ use surrealdb::opt::auth::Root;
 use surrealdb::Surreal;
 
 static DB: LazyLock<Surreal<Client>> = LazyLock::new(Surreal::init);
+
+#[derive(Debug, Deserialize)]
+struct SearchResult {
+    sample: String,
+    content: String,
+    dist: f64,
+}
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -60,16 +68,21 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     .await?
     .check()?;
 
-    // println!("Search results: {:?}", search_results);
+    let raw_results: Vec<Value> = search_results.take(0)?;
 
-    let results: Vec<Value> = search_results.take(0)?;
+    // Manually deserialize into `SearchResult`
+    let results: Vec<SearchResult> = raw_results
+        .into_iter()
+        .filter_map(|value| serde_json::from_value(value).ok()) // Filter valid deserialized results
+        .collect();
+
     for (i, result) in results.iter().enumerate() {
         println!(
             "Result {}:\n  Sample: {}\n  Content: {}\n  Distance: {:.4}\n",
             i + 1,
-            result["sample"],
-            result["content"],
-            result["dist"].as_f64().unwrap_or(0.0)
+            result.sample,
+            result.content,
+            result.dist
         );
     }
 
