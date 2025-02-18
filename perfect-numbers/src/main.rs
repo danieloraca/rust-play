@@ -1,4 +1,5 @@
 use num_bigint::BigUint;
+use num_format::{Locale, ToFormattedString};
 use num_traits::{One, Zero};
 use std::ops::Shl;
 
@@ -42,10 +43,15 @@ fn generate_perfect_numbers(limit: usize) -> Vec<BigUint> {
 }
 
 fn main() {
-    let limit = 9;
+    let limit = 10;
     let perfect_numbers = generate_perfect_numbers(limit);
 
     for num in perfect_numbers {
-        println!("Perfect number: {}", num);
+        let num_str = num.to_string(); // Convert to String
+        let formatted = num_str
+            .parse::<u128>()
+            .unwrap_or(0)
+            .to_formatted_string(&Locale::en);
+        println!("Perfect number: {}", formatted);
     }
 }
